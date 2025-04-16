@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - Mini Market Inventory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+          },
+          animation: {
+            'bounce-slow': 'bounce 3s linear infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+  <!-- Sidebar -->
+  <div class="fixed inset-y-0 left-0 bg-white dark:bg-gray-800 w-64 shadow-lg transition-all duration-300 transform z-10 sidebar">
+    <div class="flex items-center justify-center h-16 border-b dark:border-gray-700">
+      <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">Mini Market Inventory</h1>
+    </div>
+    <nav class="mt-5 px-2">
+      <a href="/dashboard" class="group flex items-center px-4 py-3 text-base font-medium rounded-md bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-200">
+        <i class="fas fa-tachometer-alt mr-3 text-primary-500 dark:text-primary-400"></i>
+        Dashboard
+      </a>
+      <a href="/products" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <i class="fas fa-box mr-3 text-gray-400 dark:text-gray-500"></i>
+        Products
+      </a>
+      <a href="/reports" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <i class="fas fa-chart-line mr-3 text-gray-400 dark:text-gray-500"></i>
+        Reports
+      </a>
+      
+      <div class="absolute bottom-0 w-full border-t dark:border-gray-700 p-4">
+        <a href="#" id="logoutBtn" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+          <i class="fas fa-sign-out-alt mr-3"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </nav>
+  </div>      
+
+  <!-- Main Content -->
+  <div class="ml-64 p-6">
+    <!-- Top bar -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold">Dashboard Overview</h2>
+        <p class="text-gray-500 dark:text-gray-400">Welcome to Mini Market Inventory</p>
+      </div>
+      <div>
+        <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i class="fas fa-moon text-gray-600 dark:hidden"></i>
+          <i class="fas fa-sun text-yellow-400 hidden dark:block"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Products</h3>
+            <p id="totalProducts" class="text-3xl font-bold text-primary-600 dark:text-primary-400">0</p>
+          </div>
+          <div class="p-3 bg-primary-50 dark:bg-primary-900 rounded-full">
+            <i class="fas fa-box text-primary-500 dark:text-primary-400 text-xl"></i>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          <span id="productChange" class="text-green-500"><i class="fas fa-arrow-up"></i> <span id="productChangeValue">0%</span></span> from last month
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Stock</h3>
+            <p id="totalStock" class="text-3xl font-bold text-primary-600 dark:text-primary-400">0</p>
+          </div>
+          <div class="p-3 bg-green-50 dark:bg-green-900 rounded-full">
+            <i class="fas fa-warehouse text-green-500 dark:text-green-400 text-xl"></i>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          <span class="text-green-500"><i class="fas fa-arrow-up"></i> <span id="stockChangeValue">0%</span></span> from last month
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Low Stock Alerts</h3>
+            <p id="lowStock" class="text-3xl font-bold text-orange-500">0</p>
+          </div>
+          <div class="p-3 bg-orange-50 dark:bg-orange-900 rounded-full">
+            <i class="fas fa-exclamation-triangle text-orange-500 dark:text-orange-400 text-xl"></i>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          <span class="text-red-500"><i class="fas fa-arrow-up"></i> <span id="lowStockChangeValue">0</span></span> new alerts today
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Out of Stock</h3>
+            <p id="outOfStock" class="text-3xl font-bold text-red-500">0</p>
+          </div>
+          <div class="p-3 bg-red-50 dark:bg-red-900 rounded-full">
+            <i class="fas fa-times-circle text-red-500 dark:text-red-400 text-xl"></i>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          <span class="text-red-500"><i class="fas fa-arrow-down"></i> <span id="outOfStockResolved">0</span></span> resolved today
+        </div>
+      </div>
+    </div>
+    
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Stock Levels By Category</h3>
+        <div class="h-[250px]">
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Inventory Value Distribution</h3>
+        <div class="h-[250px]">
+          <canvas id="inventoryValueChart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Low Stock & Performance -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="p-6 border-b dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Low Stock Products</h3>
+        </div>
+        <div class="p-6 max-h-80 overflow-y-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="lowStockTable">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="lowStockTableBody">
+              <!-- Low stock products will be added here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="p-6 border-b dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Performance Metrics</h3>
+        </div>
+        <div class="p-6">
+          <div class="mb-6">
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Accuracy</span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300" id="inventoryAccuracy">95%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div class="bg-primary-500 h-2.5 rounded-full" id="inventoryAccuracyBar" style="width: 95%"></div>
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Stock Turn Rate</span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300" id="stockTurnRate">78%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div class="bg-green-500 h-2.5 rounded-full" id="stockTurnRateBar" style="width: 78%"></div>
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Order Fulfillment Rate</span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300" id="orderFulfillmentRate">89%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div class="bg-purple-500 h-2.5 rounded-full" id="orderFulfillmentRateBar" style="width: 89%"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Perfect Order Rate</span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300" id="perfectOrderRate">82%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div class="bg-yellow-500 h-2.5 rounded-full" id="perfectOrderRateBar" style="width: 82%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Restock Modal (Enhanced Version) -->
+  <div id="restockModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+      
+      <!-- Modal position trick -->
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+      
+      <!-- Modal panel -->
+      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <!-- Modal header -->
+        <div class="bg-gradient-to-r from-primary-500 to-primary-700 dark:from-primary-700 dark:to-primary-900 px-6 py-4 rounded-t-xl">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg leading-6 font-medium text-white" id="modalTitle">Restock Product</h3>
+            <button type="button" id="closeModalX" class="text-white hover:text-gray-200 focus:outline-none">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Modal content -->
+        <div class="bg-white dark:bg-gray-800 px-6 py-5">
+          <div class="flex items-start">
+            <div class="flex-shrink-0 bg-primary-100 dark:bg-primary-900 rounded-lg p-3">
+              <i class="fas fa-boxes text-primary-600 dark:text-primary-400 text-2xl"></i>
+            </div>
+            <div class="ml-4 flex-1">
+              <p class="text-sm text-gray-600 dark:text-gray-400" id="modalDescription">Update the stock level for this product.</p>
+              
+              <div class="mt-5 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <form id="restockForm" class="space-y-5">
+                  <!-- Hidden field stores the counter-based productID -->
+                  <input type="hidden" id="productId">
+                  
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label for="currentStock" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Stock</label>
+                      <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <i class="fas fa-layer-group text-gray-400"></i>
+                        </div>
+                        <input type="number" id="currentStock" class="bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200" disabled>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label for="addStock" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Add Stock</label>
+                      <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <i class="fas fa-plus text-gray-400"></i>
+                        </div>
+                        <input type="number" id="addStock" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200" min="1" required>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label for="newStock" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Stock Level</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-clipboard-check text-gray-400"></i>
+                      </div>
+                      <input type="number" id="newStock" class="bg-primary-50 dark:bg-primary-900 border border-primary-200 dark:border-primary-800 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm text-gray-700 dark:text-gray-200 font-medium" readonly>
+                    </div>
+                  </div>
+                  
+                  <div id="stockAnimation" class="hidden">
+                    <div class="flex items-center justify-center py-3">
+                      <div class="text-center">
+                        <i class="fas fa-box text-4xl text-primary-500 dark:text-primary-400 animate-bounce-slow"></i>
+                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Adding to inventory...</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div id="stockSuccess" class="hidden">
+                    <div class="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-800 rounded-lg p-4 flex">
+                      <i class="fas fa-check-circle text-green-500 dark:text-green-400 text-xl mr-3"></i>
+                      <p class="text-sm text-green-700 dark:text-green-300">Stock updated successfully!</p>
+                    </div>
+                  </div>
+                  
+                  <div id="stockError" class="hidden">
+                    <div class="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded-lg p-4 flex">
+                      <i class="fas fa-exclamation-circle text-red-500 dark:text-red-400 text-xl mr-3"></i>
+                      <p class="text-sm text-red-700 dark:text-red-300" id="errorText">Failed to update stock. Please try again.</p>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex items-center justify-end">
+          <button type="button" id="cancelRestock" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <i class="fas fa-times mr-2"></i>
+            Cancel
+          </button>
+          <button type="button" id="confirmRestock" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:scale-105">
+            <i class="fas fa-save mr-2"></i>
+            Update Stock
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Dark mode toggle with proper functionality and localStorage persistence
+    const html = document.documentElement;
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    
+    // Check for saved theme preference or respect OS preference
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+    
+    // Toggle dark/light mode
+    darkModeToggle.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // Global variables
+    let allProducts = [];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonth = new Date().getMonth();
+    
+    // Fetch metrics and populate dashboard
+    async function fetchMetrics() {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/products', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!res.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        
+        allProducts = await res.json();
+        let totalStock = 0;
+        let lowStockCount = 0;
+        let outOfStockCount = 0;
+        let lowStockProducts = [];
+        let totalValue = 0;
+        
+        allProducts.forEach(p => {
+          totalStock += p.stock;
+          const productValue = p.price * p.stock || 0;
+          totalValue += productValue;
+          
+          if (p.stock === 0) {
+            outOfStockCount++;
+          } else if (p.stock < 10) {
+            lowStockCount++;
+            lowStockProducts.push(p);
+          }
+        });
+        
+        // Update dashboard metrics
+        document.getElementById('totalProducts').innerText = allProducts.length;
+        document.getElementById('totalStock').innerText = totalStock;
+        document.getElementById('lowStock').innerText = lowStockCount;
+        document.getElementById('outOfStock').innerText = outOfStockCount;
+        
+        // Generate performance metrics based on real data
+        updatePerformanceMetrics(allProducts);
+        
+        // Calculate changes for metrics (simulated)
+        const productChange = Math.floor(Math.random() * 10) + 5;
+        const stockChange = Math.floor(Math.random() * 15) + 3;
+        const lowStockChange = Math.floor(Math.random() * 5) + 1;
+        const outOfStockResolved = Math.floor(Math.random() * 3) + 1;
+        
+        document.getElementById('productChangeValue').innerText = `${productChange}%`;
+        document.getElementById('stockChangeValue').innerText = `${stockChange}%`;
+        document.getElementById('lowStockChangeValue').innerText = lowStockChange;
+        document.getElementById('outOfStockResolved').innerText = outOfStockResolved;
+        
+        // Populate low stock table
+        const tableBody = document.getElementById('lowStockTableBody');
+        tableBody.innerHTML = '';
+        
+        lowStockProducts.forEach(product => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">${product.name}</div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500 dark:text-gray-400">${product.category || 'N/A'}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                ${product.stock}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <!-- Modified to use product.productID instead of product.id -->
+              <button class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 restock-btn flex items-center" data-id="${product.productID}" data-name="${product.name}" data-stock="${product.stock}" data-price="${product.price || 0}">
+                <i class="fas fa-plus-circle mr-1"></i> Restock
+              </button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+        
+        // Add event listeners to restock buttons
+        document.querySelectorAll('.restock-btn').forEach(btn => {
+          btn.addEventListener('click', openRestockModal);
+        });
+        
+        // Create charts
+        createCategoryChart(allProducts);
+        createInventoryValueChart(allProducts);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    
+    // Update performance metrics based on real data
+    function updatePerformanceMetrics(products) {
+      // Calculate inventory accuracy (simulated)
+      const inventoryAccuracy = 90 + Math.floor(Math.random() * 10);
+      document.getElementById('inventoryAccuracy').textContent = `${inventoryAccuracy}%`;
+      document.getElementById('inventoryAccuracyBar').style.width = `${inventoryAccuracy}%`;
+      
+      // Calculate stock turn rate based on product diversity and stock levels
+      const avgStockPerProduct = products.reduce((sum, p) => sum + p.stock, 0) / products.length;
+      const stockTurnRate = Math.min(95, Math.max(65, Math.floor(100 - (avgStockPerProduct / 2))));
+      document.getElementById('stockTurnRate').textContent = `${stockTurnRate}%`;
+      document.getElementById('stockTurnRateBar').style.width = `${stockTurnRate}%`;
+      
+      // Calculate order fulfillment rate based on out of stock items
+      const outOfStockCount = products.filter(p => p.stock === 0).length;
+      const orderFulfillmentRate = Math.min(99, Math.max(70, Math.floor(100 - (outOfStockCount * 2))));
+      document.getElementById('orderFulfillmentRate').textContent = `${orderFulfillmentRate}%`;
+      document.getElementById('orderFulfillmentRateBar').style.width = `${orderFulfillmentRate}%`;
+      
+      // Calculate perfect order rate based on low stock items
+      const lowStockCount = products.filter(p => p.stock > 0 && p.stock < 10).length;
+      const perfectOrderRate = Math.min(95, Math.max(60, Math.floor(90 - (lowStockCount * 1.5))));
+      document.getElementById('perfectOrderRate').textContent = `${perfectOrderRate}%`;
+      document.getElementById('perfectOrderRateBar').style.width = `${perfectOrderRate}%`;
+    }
+    
+    // Create category chart
+    function createCategoryChart(products) {
+      // Group products by category
+      const categories = {};
+      products.forEach(product => {
+        const category = product.category || 'Uncategorized';
+        if (!categories[category]) {
+          categories[category] = 0;
+        }
+        categories[category] += product.stock;
+      });
+      
+      const ctx = document.getElementById('categoryChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(categories),
+          datasets: [{
+            data: Object.values(categories),
+            backgroundColor: [
+              '#0EA5E9',
+              '#22C55E',
+              '#EAB308',
+              '#EC4899',
+              '#8B5CF6',
+              '#F97316'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                boxWidth: 12,
+                font: {
+                  size: 11
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = Math.round((value / total) * 100);
+                  return `${label}: ${value} items (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Create inventory value chart (replacing trend chart)
+    function createInventoryValueChart(products) {
+      // Group products by category and calculate value
+      const categories = {};
+      const categoryValues = {};
+      
+      products.forEach(product => {
+        const category = product.category || 'Uncategorized';
+        const productValue = product.price * product.stock || 0;
+        
+        if (!categories[category]) {
+          categories[category] = 0;
+          categoryValues[category] = 0;
+        }
+        
+        categories[category] += product.stock;
+        categoryValues[category] += productValue;
+      });
+      
+      const ctx = document.getElementById('inventoryValueChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(categories),
+          datasets: [
+            {
+              label: 'Stock Quantity',
+              data: Object.values(categories),
+              backgroundColor: 'rgba(14, 165, 233, 0.5)',
+              borderColor: 'rgba(14, 165, 233, 1)',
+              borderWidth: 1,
+              order: 2
+            },
+            {
+              label: 'Inventory Value ($)',
+              data: Object.values(categoryValues),
+              backgroundColor: 'rgba(139, 92, 246, 0.3)',
+              borderColor: 'rgba(139, 92, 246, 1)',
+              borderWidth: 1,
+              type: 'line',
+              tension: 0.2,
+              yAxisID: 'y1',
+              order: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Stock Quantity'
+              }
+            },
+            y1: {
+              position: 'right',
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Value ($)'
+              },
+              grid: {
+                drawOnChartArea: false
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                boxWidth: 8
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  let value = context.raw;
+                  if (label.includes('Value')) {
+                    return `${label}: $${value.toFixed(2)}`;
+                  } else {
+                    return `${label}: ${value} units`;
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Modal functionality
+    const modal = document.getElementById('restockModal');
+    const stockAnimation = document.getElementById('stockAnimation');
+    const stockSuccess = document.getElementById('stockSuccess');
+    const stockError = document.getElementById('stockError');
+    
+    // Open restock modal
+    function openRestockModal(e) {
+      const productId = e.currentTarget.dataset.id; // Now contains the counter-based productID
+      const productName = e.currentTarget.dataset.name;
+      const currentStock = parseInt(e.currentTarget.dataset.stock);
+      const productPrice = parseFloat(e.currentTarget.dataset.price);
+      
+      // Reset modal state
+      stockAnimation.classList.add('hidden');
+      stockSuccess.classList.add('hidden');
+      stockError.classList.add('hidden');
+      
+      // Set modal values
+      document.getElementById('modalTitle').textContent = `Restock ${productName}`;
+      document.getElementById('modalDescription').textContent = `Current stock level: ${currentStock} units${productPrice ? ` • Value: $${(productPrice * currentStock).toFixed(2)}` : ''}`;
+      // Populate the hidden input with the counter-based productID
+      document.getElementById('productId').value = productId;
+      document.getElementById('currentStock').value = currentStock;
+      document.getElementById('addStock').value = '';
+      document.getElementById('newStock').value = currentStock;
+      
+      // Enable/disable confirm button based on input
+      document.getElementById('confirmRestock').disabled = true;
+      document.getElementById('confirmRestock').classList.add('opacity-50', 'cursor-not-allowed');
+      
+      // Show modal
+      modal.classList.remove('hidden');
+      
+      // Focus on add stock input
+      setTimeout(() => {
+        document.getElementById('addStock').focus();
+      }, 100);
+    }
+    
+    // Calculate new stock when add stock changes
+    document.getElementById('addStock').addEventListener('input', function() {
+      const currentStock = parseInt(document.getElementById('currentStock').value) || 0;
+      const addStock = parseInt(this.value) || 0;
+      const newStock = currentStock + addStock;
+      document.getElementById('newStock').value = newStock;
+      
+      // Enable/disable confirm button based on input
+      const confirmButton = document.getElementById('confirmRestock');
+      if (addStock > 0) {
+        confirmButton.disabled = false;
+        confirmButton.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else {
+        confirmButton.disabled = true;
+        confirmButton.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    });
+    
+    // Close modal handlers
+    document.getElementById('closeModalX').addEventListener('click', closeModal);
+    document.getElementById('cancelRestock').addEventListener('click', closeModal);
+    
+    // Close modal function
+    function closeModal() {
+      modal.classList.add('hidden');
+    }
+    
+    // Restock product using counter-based productID
+    document.getElementById('confirmRestock').addEventListener('click', async function() {
+      const productId = document.getElementById('productId').value; // This value now holds product.productID
+      const newStock = parseInt(document.getElementById('newStock').value);
+      const token = localStorage.getItem('token');
+      
+      // Show loading animation
+      stockAnimation.classList.remove('hidden');
+      stockSuccess.classList.add('hidden');
+      stockError.classList.add('hidden');
+      this.disabled = true;
+      document.getElementById('cancelRestock').disabled = true;
+      
+      try {
+        const res = await fetch(`/api/products/${productId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ stock: newStock })
+        });
+        
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status}`);
+        }
+        
+        // Hide loading, show success
+        stockAnimation.classList.add('hidden');
+        stockSuccess.classList.remove('hidden');
+        document.getElementById('cancelRestock').textContent = 'Close';
+        document.getElementById('cancelRestock').disabled = false;
+        document.getElementById('confirmRestock').classList.add('hidden');
+        
+        // Refresh dashboard data after a short delay
+        setTimeout(() => {
+          closeModal();
+          fetchMetrics();
+          
+          // Reset modal button states
+          document.getElementById('cancelRestock').textContent = 'Cancel';
+          document.getElementById('confirmRestock').classList.remove('hidden');
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Error updating stock:', error);
+        
+        // Show error message
+        stockAnimation.classList.add('hidden');
+        stockError.classList.remove('hidden');
+        document.getElementById('errorText').textContent = `Failed to update stock: ${error.message}`;
+        document.getElementById('cancelRestock').disabled = false;
+        this.disabled = false;
+      }
+    });
+
+      document.getElementById('logoutBtn').addEventListener('click', function (e) {
+      e.preventDefault(); // stop the anchor from navigating
+
+      // Remove both possible tokens
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+
+      // Optionally show a message or redirect to login
+      alert('Logged out successfully');
+      window.location.href = 'login.html'; // redirect manually
+    });
+
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/';
+    }
+
+    // Initialize dashboard
+    fetchMetrics();
+  </script>
+</body>
+</html>

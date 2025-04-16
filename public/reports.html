@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports - Mini Market Inventory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+          },
+          animation: {
+            'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-slow': 'bounce 2s infinite',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+  <!-- Sidebar -->
+  <div class="fixed inset-y-0 left-0 bg-white dark:bg-gray-800 w-64 shadow-lg transition-all duration-300 transform z-10 sidebar">
+    <div class="flex items-center justify-center h-16 border-b dark:border-gray-700">
+      <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">Mini Market Inventory</h1>
+    </div>
+    <nav class="mt-5 px-2">
+      <a href="/dashboard" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <i class="fas fa-tachometer-alt mr-3 text-gray-400 dark:text-gray-500"></i>
+        Dashboard
+      </a>
+      <a href="/products" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <i class="fas fa-box mr-3 text-gray-400 dark:text-gray-500"></i>
+        Products
+      </a>
+      <a href="/reports" class="group flex items-center px-4 py-3 text-base font-medium rounded-md bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-200">
+        <i class="fas fa-chart-line mr-3 text-primary-500 dark:text-primary-400"></i>
+        Reports
+      </a>
+    </nav>
+      <div class="absolute bottom-0 w-full border-t dark:border-gray-700 p-4">
+        <a href="#" id="logoutBtn" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+          <i class="fas fa-sign-out-alt mr-3"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+  </div>
+  
+
+  <!-- Main Content -->
+  <div class="ml-64 p-6">
+    <!-- Top bar -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold">Sales Reports</h2>
+        <p class="text-gray-500 dark:text-gray-400">Track and analyze your sales data</p>
+      </div>
+      <div>
+        <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i class="fas fa-moon text-gray-600 dark:hidden"></i>
+          <i class="fas fa-sun text-yellow-400 hidden dark:block"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Report Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
+        <div class="p-3 rounded-full bg-primary-100 dark:bg-primary-900 mr-4">
+          <i class="fas fa-file-invoice-dollar text-primary-500 dark:text-primary-400 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Total Reports</p>
+          <p id="totalReportsCount" class="text-xl font-semibold">0</p>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
+        <div class="p-3 rounded-full bg-green-100 dark:bg-green-900 mr-4">
+          <i class="fas fa-coins text-green-500 dark:text-green-400 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+          <p id="totalRevenue" class="text-xl font-semibold">$0.00</p>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
+        <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900 mr-4">
+          <i class="fas fa-shopping-cart text-purple-500 dark:text-purple-400 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Items Sold</p>
+          <p id="totalItemsSold" class="text-xl font-semibold">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Sales Report Form -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="border-b dark:border-gray-700 p-6">
+          <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+            <i class="fas fa-plus-circle mr-2 text-primary-500 dark:text-primary-400"></i>
+            Create New Sales Report
+          </h3>
+        </div>
+        <div class="p-6">
+          <form id="reportForm" class="space-y-6">
+            <div>
+              <label for="reportType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Report Type</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-calendar-alt text-gray-400"></i>
+                </div>
+                <select id="reportType" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Custom">Custom</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="dateRangeContainer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="startDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-calendar text-gray-400"></i>
+                  </div>
+                  <input type="date" id="startDate" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                </div>
+              </div>
+              <div>
+                <label for="endDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-calendar text-gray-400"></i>
+                  </div>
+                  <input type="date" id="endDate" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between">
+                <h4 class="text-md font-medium text-gray-700 dark:text-gray-300">Sold Items</h4>
+                <button type="button" id="addSoldItem" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-all duration-200 transform hover:scale-105">
+                  <i class="fas fa-plus mr-2"></i>
+                  Add Item
+                </button>
+              </div>
+              
+              <div id="soldItemsContainer" class="mt-3 space-y-3 max-h-64 overflow-y-auto pr-2">
+                <div class="soldItem bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                  <div class="grid grid-cols-1 gap-3">
+                    <div>
+                      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Product</label>
+                      <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <i class="fas fa-barcode text-gray-400"></i>
+                        </div>
+                        <select class="product-select bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                          <option value="">Select a product</option>
+                        </select>
+                        <input type="hidden" class="soldProductId">
+                      </div>
+                    </div>
+                    <div class="product-info hidden">
+                      <div class="bg-primary-50 dark:bg-primary-800 rounded-lg p-2 border border-primary-100 dark:border-primary-700">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center">
+                            <i class="fas fa-tag text-primary-500 dark:text-primary-400 mr-2"></i>
+                            <span class="product-name font-medium text-primary-700 dark:text-primary-300">Product Name</span>
+                          </div>
+                          <div class="text-sm text-primary-600 dark:text-primary-400">
+                            <span class="product-price">$0.00</span> | Stock: <span class="product-stock">0</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Quantity Sold</label>
+                        <div class="relative">
+                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-hashtag text-gray-400"></i>
+                          </div>
+                          <input type="number" placeholder="0" min="1" class="soldCount bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Revenue ($)</label>
+                        <div class="relative">
+                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-dollar-sign text-gray-400"></i>
+                          </div>
+                          <input type="number" placeholder="0.00" min="0" step="0.01" class="soldRevenue bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex justify-end mt-2">
+                    <button type="button" class="removeItem inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 dark:text-red-200 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800">
+                      <i class="fas fa-trash-alt mr-1"></i>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="formError" class="hidden">
+              <div class="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded-lg p-4 flex">
+                <i class="fas fa-exclamation-circle text-red-500 dark:text-red-400 text-xl mr-3"></i>
+                <p class="text-sm text-red-700 dark:text-red-300" id="errorText">Please fill in all required fields.</p>
+              </div>
+            </div>
+
+            <div id="submitSuccess" class="hidden">
+              <div class="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-800 rounded-lg p-4 flex">
+                <i class="fas fa-check-circle text-green-500 dark:text-green-400 text-xl mr-3"></i>
+                <p class="text-sm text-green-700 dark:text-green-300">Report submitted successfully!</p>
+              </div>
+            </div>
+
+            <div>
+              <button type="submit" id="submitReportBtn" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:scale-105">
+                <i class="fas fa-paper-plane mr-2"></i>
+                Submit Report
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Reports History -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="border-b dark:border-gray-700 p-6">
+          <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+            <i class="fas fa-history mr-2 text-primary-500 dark:text-primary-400"></i>
+            Reports History
+          </h3>
+        </div>
+        <div class="p-6">
+          <!-- Replaced Search with Date Filter UI -->
+          <div class="mb-4">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+              <div class="mb-3">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Date</h4>
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" class="date-filter-btn inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" data-range="today">Today</button>
+                  <button type="button" class="date-filter-btn inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" data-range="yesterday">Yesterday</button>
+                  <button type="button" class="date-filter-btn inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" data-range="week">This Week</button>
+                  <button type="button" class="date-filter-btn inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" data-range="month">This Month</button>
+                  <button type="button" class="date-filter-btn inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" data-range="last-month">Last Month</button>
+                  <button type="button" class="date-filter-btn inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" data-range="all">All Time</button>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label for="filterStartDate" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">From</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fas fa-calendar text-gray-400"></i>
+                    </div>
+                    <input type="date" id="filterStartDate" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                  </div>
+                </div>
+                <div>
+                  <label for="filterEndDate" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">To</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fas fa-calendar text-gray-400"></i>
+                    </div>
+                    <input type="date" id="filterEndDate" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-3 flex justify-between items-center">
+                <div id="dateRangeDisplay" class="text-xs text-gray-500 dark:text-gray-400">
+                  <i class="fas fa-info-circle mr-1"></i> Showing all reports
+                </div>
+                <button id="applyDateFilter" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                  <i class="fas fa-filter mr-2"></i>
+                  Apply Filter
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div id="reportsHistory" class="space-y-4 max-h-[480px] overflow-y-auto pr-2"></div>
+          
+          <div id="noReportsMessage" class="hidden text-center py-12">
+            <div class="text-gray-400 dark:text-gray-500 text-5xl mb-4">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">No reports found</h3>
+            <p class="text-gray-400 dark:text-gray-500 mt-2">Create your first sales report to get started</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Chart -->
+    <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div class="border-b dark:border-gray-700 p-6">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+          <i class="fas fa-chart-line mr-2 text-primary-500 dark:text-primary-400"></i>
+          Revenue Trends
+        </h3>
+      </div>
+      <div class="p-6">
+        <div class="h-[300px]">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dark mode toggle with proper functionality and localStorage persistence
+    const html = document.documentElement;
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    
+    // Check for saved theme preference or respect OS preference
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+    
+    // Toggle dark/light mode
+    darkModeToggle.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+    
+    // Global variables
+    let allReports = [];
+    let allProducts = [];
+    let revenueChart = null;
+    let currentFilterMode = 'all';
+    
+    // Function to update revenue when quantity changes
+    function updateRevenue(quantityInput) {
+      const soldItem = quantityInput.closest('.soldItem');
+      const select = soldItem.querySelector('.product-select');
+      const soldRevenue = soldItem.querySelector('.soldRevenue');
+      
+      if (select.value) {
+        const selectedOption = select.options[select.selectedIndex];
+        const price = parseFloat(selectedOption.dataset.price);
+        const quantity = parseInt(quantityInput.value) || 0;
+        
+        // Calculate revenue
+        if (quantity > 0) {
+          const revenue = price * quantity;
+          soldRevenue.value = revenue.toFixed(2);
+        }
+      }
+    }
+    
+    // Fetch all products when page loads
+    async function fetchAllProducts() {
+      try {
+        const res = await fetch('/api/products', { 
+          headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        
+        if (!res.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        
+        allProducts = await res.json();
+        
+        // Populate product dropdowns
+        populateProductDropdowns();
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    }
+
+    // Populate product dropdown in all sold items
+    function populateProductDropdowns() {
+      const productSelects = document.querySelectorAll('.product-select');
+      
+      productSelects.forEach(select => {
+        // Keep the first option (placeholder)
+        const firstOption = select.options[0];
+        select.innerHTML = '';
+        select.appendChild(firstOption);
+        
+        // Add products to dropdown - using MongoDB _id instead of productID
+        allProducts.forEach(product => {
+          const option = document.createElement('option');
+          option.value = product._id; // Using MongoDB _id instead of productID
+          option.textContent = `${product.productID} - ${product.name} ($${product.price})`;
+          option.dataset.price = product.price;
+          option.dataset.stock = product.stock;
+          option.dataset.name = product.name;
+          option.dataset.productId = product.productID; // Store productID as data attribute if needed
+          select.appendChild(option);
+        });
+      });
+    }
+
+    // Handle product selection change
+    function handleProductSelection(select) {
+      const soldItem = select.closest('.soldItem');
+      const mongoId = select.value; // This is now the MongoDB _id
+      const productInfo = soldItem.querySelector('.product-info');
+      const hiddenInput = soldItem.querySelector('.soldProductId');
+      
+      // Reset related fields
+      const soldCount = soldItem.querySelector('.soldCount');
+      const soldRevenue = soldItem.querySelector('.soldRevenue');
+      soldCount.value = '';
+      soldRevenue.value = '';
+      
+      if (mongoId) {
+        // Find selected product
+        const selectedOption = select.options[select.selectedIndex];
+        const productName = selectedOption.dataset.name;
+        const productPrice = selectedOption.dataset.price;
+        const productStock = selectedOption.dataset.stock;
+        const productId = selectedOption.dataset.productId;
+        
+        // Update hidden input with MongoDB _id
+        hiddenInput.value = mongoId;
+        
+        // Update the product info display
+        soldItem.querySelector('.product-name').textContent = productName;
+        soldItem.querySelector('.product-price').textContent = `$${parseFloat(productPrice).toFixed(2)}`;
+        soldItem.querySelector('.product-stock').textContent = productStock;
+        productInfo.classList.remove('hidden');
+        
+        // Set max quantity to current stock
+        soldCount.max = productStock;
+      } else {
+        // Hide product info if no product selected
+        productInfo.classList.add('hidden');
+        hiddenInput.value = '';
+      }
+    }
+
+    // Show date range inputs if Custom report type is selected
+    document.getElementById('reportType').addEventListener('change', function() {
+      const dateRangeContainer = document.getElementById('dateRangeContainer');
+      if (this.value === 'Custom') {
+        dateRangeContainer.classList.remove('hidden');
+      } else {
+        dateRangeContainer.classList.add('hidden');
+      }
+    });
+    
+    // Add sold item row
+    document.getElementById('addSoldItem').addEventListener('click', () => {
+      const container = document.getElementById('soldItemsContainer');
+      const div = document.createElement('div');
+      div.className = 'soldItem bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600';
+      div.innerHTML = `
+        <div class="grid grid-cols-1 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Product</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-barcode text-gray-400"></i>
+              </div>
+              <select class="product-select bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                <option value="">Select a product</option>
+              </select>
+              <input type="hidden" class="soldProductId">
+            </div>
+          </div>
+          <div class="product-info hidden">
+            <div class="bg-primary-50 dark:bg-primary-800 rounded-lg p-2 border border-primary-100 dark:border-primary-700">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <i class="fas fa-tag text-primary-500 dark:text-primary-400 mr-2"></i>
+                  <span class="product-name font-medium text-primary-700 dark:text-primary-300">Product Name</span>
+                </div>
+                <div class="text-sm text-primary-600 dark:text-primary-400">
+                  <span class="product-price">$0.00</span> | Stock: <span class="product-stock">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Quantity Sold</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-hashtag text-gray-400"></i>
+                </div>
+                <input type="number" placeholder="0" min="1" class="soldCount bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Revenue ($)</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-dollar-sign text-gray-400"></i>
+                </div>
+                <input type="number" placeholder="0.00" min="0" step="0.01" class="soldRevenue bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 w-full shadow-sm focus:ring-primary-500 focus:border-primary-500">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end mt-2">
+          <button type="button" class="removeItem inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 dark:text-red-200 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800">
+            <i class="fas fa-trash-alt mr-1"></i>
+            Remove
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+      
+      // Populate product dropdown in the new item
+      const newSelect = div.querySelector('.product-select');
+      
+      // Keep the first option (placeholder)
+      const firstOption = newSelect.options[0];
+      newSelect.innerHTML = '';
+      newSelect.appendChild(firstOption);
+      
+      // Add products to dropdown - using MongoDB _id here too
+      allProducts.forEach(product => {
+        const option = document.createElement('option');
+        option.value = product._id; // Using MongoDB _id as the value
+        option.textContent = `${product.productID} - ${product.name} ($${product.price})`;
+        option.dataset.price = product.price;
+        option.dataset.stock = product.stock;
+        option.dataset.name = product.name;
+        option.dataset.productId = product.productID;
+        newSelect.appendChild(option);
+      });
+      
+      // Add event listeners to the new elements
+      newSelect.addEventListener('change', function() {
+        handleProductSelection(this);
+      });
+      
+      // Add event listener for quantity field to auto-calculate revenue
+      const quantityField = div.querySelector('.soldCount');
+      quantityField.addEventListener('input', function() {
+        updateRevenue(this);
+      });
+      
+      div.querySelector('.removeItem').addEventListener('click', function() {
+        div.remove();
+      });
+    });
+
+    // Add event listeners to initial product select and quantity field
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.product-select').forEach(select => {
+        select.addEventListener('change', function() {
+          handleProductSelection(this);
+        });
+      });
+      
+      document.querySelectorAll('.soldCount').forEach(input => {
+        input.addEventListener('input', function() {
+          updateRevenue(this);
+        });
+      });
+      
+      document.querySelectorAll('.removeItem').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.closest('.soldItem').remove();
+        });
+      });
+    });
+
+    // Report form submission
+    document.getElementById('reportForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Hide previous messages
+      document.getElementById('formError').classList.add('hidden');
+      document.getElementById('submitSuccess').classList.add('hidden');
+      
+      // Get report type and date range if custom
+      const reportType = document.getElementById('reportType').value;
+      let reportData = { reportType };
+      
+      if (reportType === 'Custom') {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        
+        if (!startDate || !endDate) {
+          document.getElementById('errorText').textContent = 'Please select both start and end dates.';
+          document.getElementById('formError').classList.remove('hidden');
+          return;
+        }
+        
+        reportData.startDate = startDate;
+        reportData.endDate = endDate;
+      }
+      
+      // Get sold items
+      const soldItemsElements = document.querySelectorAll('.soldItem');
+      const soldItems = [];
+      
+      let isValid = true;
+      
+      soldItemsElements.forEach(item => {
+        const productId = item.querySelector('.soldProductId').value.trim();
+        const soldCount = parseInt(item.querySelector('.soldCount').value) || 0;
+        const revenue = parseFloat(item.querySelector('.soldRevenue').value) || 0;
+        
+        if (!productId || soldCount <= 0 || revenue <= 0) {
+          isValid = false;
+          return;
+        }
+        
+        soldItems.push({ product: productId, soldCount, revenue });
+      });
+      
+      if (!isValid || soldItems.length === 0) {
+        document.getElementById('errorText').textContent = 'Please fill in all fields for each sold item.';
+        document.getElementById('formError').classList.remove('hidden');
+        return;
+      }
+      
+      reportData.soldItems = soldItems;
+      
+      // Prepare loading state
+      const submitBtn = document.getElementById('submitReportBtn');
+      const originalBtnContent = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
+      
+      try {
+        const res = await fetch('/api/reports', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify(reportData)
+        });
+        
+        const data = await res.json();
+        
+        if (data._id) {
+          // Show success message
+          document.getElementById('submitSuccess').classList.remove('hidden');
+          
+          // Reset form
+          document.getElementById('reportForm').reset();
+          
+          // Keep only the first soldItem and clear its inputs
+          const soldItemsContainer = document.getElementById('soldItemsContainer');
+          const firstItem = soldItemsContainer.querySelector('.soldItem');
+          soldItemsContainer.innerHTML = '';
+          soldItemsContainer.appendChild(firstItem);
+          
+          firstItem.querySelector('.product-select').selectedIndex = 0;
+          firstItem.querySelector('.product-info').classList.add('hidden');
+          firstItem.querySelector('.soldProductId').value = '';
+          firstItem.querySelectorAll('input').forEach(input => {
+            if (!input.classList.contains('soldProductId')) {
+              input.value = '';
+            }
+          });
+          
+          // Reload reports
+          await loadReports();
+          
+          // Scroll to success message
+          document.getElementById('submitSuccess').scrollIntoView({ behavior: 'smooth' });
+        } else {
+          throw new Error(data.error || 'Failed to submit report');
+        }
+      } catch (error) {
+        console.error('Error submitting report:', error);
+        document.getElementById('errorText').textContent = error.message;
+        document.getElementById('formError').classList.remove('hidden');
+      } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnContent;
+      }
+    });
+
+    // Date filter functionality
+    const dateFilterBtns = document.querySelectorAll('.date-filter-btn');
+    const filterStartDate = document.getElementById('filterStartDate');
+    const filterEndDate = document.getElementById('filterEndDate');
+    const applyDateFilter = document.getElementById('applyDateFilter');
+    const dateRangeDisplay = document.getElementById('dateRangeDisplay');
+
+    // Set initial dates (default to "All Time")
+    function setDefaultDates() {
+      // Clear the date inputs
+      filterStartDate.value = '';
+      filterEndDate.value = '';
+      dateRangeDisplay.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Showing all reports';
+      
+      // Reset active button styling
+      dateFilterBtns.forEach(btn => {
+        btn.classList.remove('bg-primary-100', 'dark:bg-primary-800', 'text-primary-700', 'dark:text-primary-300', 'border-primary-300', 'dark:border-primary-700');
+        btn.classList.add('bg-white', 'dark:bg-gray-800', 'border-gray-300', 'dark:border-gray-600');
+      });
+      
+      // Highlight the "All Time" button
+      const allTimeBtn = document.querySelector('[data-range="all"]');
+      allTimeBtn.classList.remove('bg-white', 'dark:bg-gray-800', 'border-gray-300', 'dark:border-gray-600');
+      allTimeBtn.classList.add('bg-primary-100', 'dark:bg-primary-800', 'text-primary-700', 'dark:text-primary-300', 'border-primary-300', 'dark:border-primary-700');
+      
+      currentFilterMode = 'all';
+    }
+
+    // Helper to format date for display
+    function formatDateForDisplay(date) {
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+      });
+    }
+
+    // Set date range and update UI based on predefined ranges
+    dateFilterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Reset all buttons to default style
+        dateFilterBtns.forEach(b => {
+          b.classList.remove('bg-primary-100', 'dark:bg-primary-800', 'text-primary-700', 'dark:text-primary-300', 'border-primary-300', 'dark:border-primary-700');
+          b.classList.add('bg-white', 'dark:bg-gray-800', 'border-gray-300', 'dark:border-gray-600');
+        });
+        
+        // Highlight the clicked button
+        btn.classList.remove('bg-white', 'dark:bg-gray-800', 'border-gray-300', 'dark:border-gray-600');
+        btn.classList.add('bg-primary-100', 'dark:bg-primary-800', 'text-primary-700', 'dark:text-primary-300', 'border-primary-300', 'dark:border-primary-700');
+        
+        const range = btn.dataset.range;
+        currentFilterMode = range;
+        const today = new Date();
+        let startDate = new Date();
+        let endDate = new Date();
+        
+        switch(range) {
+          case 'today':
+            // Just today
+            startDate = new Date(today.setHours(0, 0, 0, 0));
+            endDate = new Date(today);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+          case 'yesterday':
+            // Yesterday
+            startDate = new Date(today);
+            startDate.setDate(startDate.getDate() - 1);
+            startDate.setHours(0, 0, 0, 0);
+            endDate = new Date(today);
+            endDate.setDate(endDate.getDate() - 1);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+          case 'week':
+            // Current week (last 7 days)
+            startDate = new Date(today);
+            startDate.setDate(startDate.getDate() - 6);
+            startDate.setHours(0, 0, 0, 0);
+            endDate = new Date(today);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+          case 'month':
+            // Current month
+            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            endDate = new Date(today);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+          case 'last-month':
+            // Last month
+            startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+          case 'all':
+            // All time - clear the filters
+            filterStartDate.value = '';
+            filterEndDate.value = '';
+            dateRangeDisplay.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Showing all reports';
+            displayReports(allReports);
+            return;
+        }
+        
+        // Update date inputs
+        filterStartDate.valueAsDate = startDate;
+        filterEndDate.valueAsDate = endDate;
+        
+        // Update range display
+        dateRangeDisplay.innerHTML = `<i class="fas fa-calendar-check mr-1"></i> ${formatDateForDisplay(startDate)} - ${formatDateForDisplay(endDate)}`;
+        
+        // Apply filter
+        filterReportsByDate(startDate, endDate);
+      });
+    });
+
+    // Apply custom date filter
+    applyDateFilter.addEventListener('click', () => {
+      const startDate = filterStartDate.value ? new Date(filterStartDate.value) : null;
+      const endDate = filterEndDate.value ? new Date(filterEndDate.value) : null;
+      
+      if (startDate && endDate) {
+        // Set end date to end of day
+        endDate.setHours(23, 59, 59, 999);
+        
+        // Reset button styling
+        dateFilterBtns.forEach(btn => {
+          btn.classList.remove('bg-primary-100', 'dark:bg-primary-800', 'text-primary-700', 'dark:text-primary-300', 'border-primary-300', 'dark:border-primary-700');
+          btn.classList.add('bg-white', 'dark:bg-gray-800', 'border-gray-300', 'dark:border-gray-600');
+        });
+        
+        // Update range display
+        dateRangeDisplay.innerHTML = `<i class="fas fa-calendar-check mr-1"></i> ${formatDateForDisplay(startDate)} - ${formatDateForDisplay(endDate)}`;
+        
+        currentFilterMode = 'custom';
+        
+        // Apply filter
+        filterReportsByDate(startDate, endDate);
+      } else if (!startDate && !endDate) {
+        // Show all reports
+        setDefaultDates();
+        displayReports(allReports);
+      } else {
+        // One date is missing
+        alert('Please select both start and end dates or clear both to show all reports.');
+      }
+    });
+
+    // Filter reports by date range
+    function filterReportsByDate(startDate, endDate) {
+      if (!startDate || !endDate) {
+        displayReports(allReports);
+        return;
+      }
+      
+      const filtered = allReports.filter(report => {
+        const reportDate = new Date(report.reportDate);
+        return reportDate >= startDate && reportDate <= endDate;
+      });
+      
+      displayReports(filtered);
+    }
+
+    // Load reports from API
+    async function loadReports() {
+      try {
+        const res = await fetch('/api/reports', { 
+          headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        
+        if (!res.ok) {
+          throw new Error('Failed to fetch reports');
+        }
+        
+        allReports = await res.json();
+        
+        // Update stats
+        updateReportStats();
+        
+        // Display reports based on current filter
+        if (currentFilterMode === 'all') {
+          displayReports(allReports);
+        } else {
+          // Re-apply current filter
+          const startDate = filterStartDate.value ? new Date(filterStartDate.value) : null;
+          const endDate = filterEndDate.value ? new Date(filterEndDate.value) : null;
+          
+          if (startDate && endDate) {
+            endDate.setHours(23, 59, 59, 999);
+            filterReportsByDate(startDate, endDate);
+          } else {
+            displayReports(allReports);
+          }
+        }
+        
+        // Generate chart
+        createRevenueChart();
+      } catch (error) {
+        console.error('Error loading reports:', error);
+      }
+    }
+
+    // Update report statistics
+    function updateReportStats() {
+      const totalReports = allReports.length;
+      let totalRevenue = 0;
+      let totalItemsSold = 0;
+      
+      allReports.forEach(report => {
+        totalRevenue += report.totalRevenue || 0;
+        
+        report.soldItems.forEach(item => {
+          totalItemsSold += item.soldCount;
+        });
+      });
+      
+      document.getElementById('totalReportsCount').textContent = totalReports;
+      document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+      document.getElementById('totalItemsSold').textContent = totalItemsSold;
+    }
+
+    // Display reports in the history section
+    function displayReports(reports) {
+      const container = document.getElementById('reportsHistory');
+      const noReportsMessage = document.getElementById('noReportsMessage');
+      
+      container.innerHTML = '';
+      
+      if (reports.length === 0) {
+        noReportsMessage.classList.remove('hidden');
+      } else {
+        noReportsMessage.classList.add('hidden');
+        
+        reports.forEach(report => {
+          const div = document.createElement('div');
+          div.className = 'bg-gray-50 dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 overflow-hidden transition-all duration-300 hover:shadow-md';
+          
+          // Determine report badge color
+          let badgeClass = 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200';
+          if (report.reportType === 'Monthly') {
+            badgeClass = 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200';
+          } else if (report.reportType === 'Custom') {
+            badgeClass = 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+          }
+          
+          // Format date
+          const reportDate = new Date(report.reportDate);
+          const formattedDate = reportDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          let soldItemsHTML = '';
+          report.soldItems.forEach(item => {
+            let productName = item.product.name;
+            let productID = '';
+            const product = allProducts.find(p => p.productID === item.product);
+            
+            if (product) {
+              productName = product.name;
+              productID = product.productID;
+            }
+            
+            soldItemsHTML += `
+              <div class="flex justify-between py-1 border-b dark:border-gray-600 text-sm">
+                <div class="flex items-center">
+                  <i class="fas fa-tag text-gray-400 mr-2"></i>
+                  <span title="${productID}">${productName}</span>
+                </div>
+                <div class="flex space-x-4">
+                  <span><i class="fas fa-hashtag text-gray-400 mr-1"></i>${item.soldCount}</span>
+                  <span><i class="fas fa-dollar-sign text-gray-400 mr-1"></i>${item.revenue.toFixed(2)}</span>
+                </div>
+              </div>
+            `;
+          });
+          
+          div.innerHTML = `
+            <div class="p-4 border-b dark:border-gray-600">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <span class="text-xs px-2 py-1 rounded-full ${badgeClass} mr-2">
+                    ${report.reportType}
+                  </span>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">${formattedDate}</span>
+                </div>
+                <div class="font-bold text-green-600 dark:text-green-400">
+                  $${report.totalRevenue ? report.totalRevenue.toFixed(2) : '0.00'}
+                </div>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Sold Items:</h3>
+              <div class="space-y-0">
+                ${soldItemsHTML}
+              </div>
+            </div>
+          `;
+          
+          container.appendChild(div);
+        });
+      }
+    }
+
+    // Create revenue chart
+    function createRevenueChart() {
+      // Prepare data for chart (last 6 reports)
+      const reportsForChart = [...allReports].sort((a, b) => 
+        new Date(a.reportDate) - new Date(b.reportDate)
+      ).slice(-6);
+      
+      const labels = reportsForChart.map(report => {
+        const date = new Date(report.reportDate);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      });
+      
+      const revenues = reportsForChart.map(report => report.totalRevenue || 0);
+      const itemsSold = reportsForChart.map(report => 
+        report.soldItems.reduce((sum, item) => sum + item.soldCount, 0)
+      );
+      
+      // Get chart context
+      const ctx = document.getElementById('revenueChart').getContext('2d');
+      
+      // Destroy existing chart if it exists
+      if (revenueChart) {
+        revenueChart.destroy();
+      }
+      
+      // Create new chart
+      revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Revenue ($)',
+              data: revenues,
+              backgroundColor: 'rgba(14, 165, 233, 0.1)',
+              borderColor: 'rgba(14, 165, 233, 1)',
+              borderWidth: 2,
+              tension: 0.3,
+              fill: true,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Items Sold',
+              data: itemsSold,
+              backgroundColor: 'rgba(139, 92, 246, 0.1)',
+              borderColor: 'rgba(139, 92, 246, 1)',
+              borderWidth: 2,
+              tension: 0.3,
+              fill: true,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                boxWidth: 8,
+                color: html.classList.contains('dark') ? '#e5e7eb' : '#374151'
+              }
+            },
+            tooltip: {
+              usePointStyle: true
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              type: 'linear',
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Revenue ($)',
+                color: html.classList.contains('dark') ? '#e5e7eb' : '#374151'
+              },
+              ticks: {
+                callback: function(value) {
+                  return '$' + value;
+                },
+                color: html.classList.contains('dark') ? '#9ca3af' : '#6b7280'
+              },
+              grid: {
+                color: html.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              }
+            },
+            y1: {
+              beginAtZero: true,
+              type: 'linear',
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Items Sold',
+                color: html.classList.contains('dark') ? '#e5e7eb' : '#374151'
+              },
+              ticks: {
+                color: html.classList.contains('dark') ? '#9ca3af' : '#6b7280'
+              },
+              grid: {
+                drawOnChartArea: false
+              }
+            },
+            x: {
+              ticks: {
+                color: html.classList.contains('dark') ? '#9ca3af' : '#6b7280'
+              },
+              grid: {
+                color: html.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    async function initializePage() {
+      await fetchAllProducts();
+      await loadReports();
+      setDefaultDates();
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', function (e) {
+      e.preventDefault(); 
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+
+      alert('Logged out successfully');
+      window.location.href = 'login.html';
+    });
+
+    if (!token) {
+      window.location.href = '/';
+    }
+    
+    initializePage();
+
+    darkModeToggle.addEventListener('click', () => {
+      setTimeout(() => {
+        createRevenueChart();
+      }, 100);
+    });
+  </script>
+</body>
+</html>

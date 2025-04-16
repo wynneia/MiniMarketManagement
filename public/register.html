@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register - Mini Market Inventory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'gradient': 'gradient 8s linear infinite',
+          },
+          keyframes: {
+            gradient: {
+              '0%, 100%': { backgroundPosition: '0% 50%' },
+              '50%': { backgroundPosition: '100% 50%' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-size-200 animate-gradient">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="backdrop-blur-md bg-white/30 dark:bg-gray-900/30 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 transition-all duration-500">
+      <div class="mb-8 text-center">
+        <h2 class="text-3xl font-bold text-white tracking-tight">Create Account</h2>
+        <p class="text-gray-200 mt-2">Join our mini market family</p>
+      </div>
+      
+      <div id="errorMessage" class="hidden mb-4 p-3 rounded-lg bg-red-500/20 text-red-200 text-sm"></div>
+      
+      <form id="registerForm" class="space-y-5">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-user text-gray-400"></i>
+          </div>
+          <input type="text" id="name" placeholder="Full Name" 
+                 class="w-full bg-white/10 border border-white/10 text-white rounded-lg py-3 pl-10 pr-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300">
+        </div>
+        
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-envelope text-gray-400"></i>
+          </div>
+          <input type="email" id="email" placeholder="Email" 
+                 class="w-full bg-white/10 border border-white/10 text-white rounded-lg py-3 pl-10 pr-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300">
+        </div>
+        
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-lock text-gray-400"></i>
+          </div>
+          <input type="password" id="password" placeholder="Password" 
+                 class="w-full bg-white/10 border border-white/10 text-white rounded-lg py-3 pl-10 pr-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300">
+        </div>
+        
+        <button type="submit" 
+                class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg">
+          Create Account
+        </button>
+      </form>
+      
+      <div class="mt-8 text-center">
+        <p class="text-gray-200">
+          Already have an account? 
+          <a href="login.html" class="font-medium text-purple-300 hover:text-white transition-colors duration-300">Sign in</a>
+        </p>
+      </div>
+      
+      <div class="mt-6 flex justify-center space-x-4">
+        <button class="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all duration-300">
+          <i class="fab fa-google text-white"></i>
+        </button>
+        <button class="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all duration-300">
+          <i class="fab fa-github text-white"></i>
+        </button>
+        <button class="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all duration-300">
+          <i class="fab fa-twitter text-white"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('errorMessage');
+      
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        
+        const data = await res.json();
+        
+        if (!data.error) {
+          // Success animation
+          document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-check mr-2"></i> Success!';
+          
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 800);
+        } else {
+          // Show error
+          errorMessage.textContent = data.error || 'Registration failed. Please try again.';
+          errorMessage.classList.remove('hidden');
+          
+          // Shake animation for error
+          const form = document.getElementById('registerForm');
+          form.classList.add('animate-[wiggle_0.5s_ease-in-out]');
+          setTimeout(() => form.classList.remove('animate-[wiggle_0.5s_ease-in-out]'), 500);
+        }
+      } catch (err) {
+        errorMessage.textContent = 'Connection error. Please try again later.';
+        errorMessage.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
