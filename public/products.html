@@ -7,6 +7,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
+      const tokenx = localStorage.getItem('token') || sessionStorage.getItem('token');
+      if (!tokenx) {
+      window.location.href = '/login';
+    }
+  </script>
+  <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -27,11 +33,128 @@
           },
           animation: {
             'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'spin-slow': 'spin 3s linear infinite',
+            'bounce-slow': 'bounce 2s infinite',
+            'float': 'float 3s ease-in-out infinite',
+            'scale': 'scale 0.3s ease-in-out',
+            'slide-up': 'slideUp 0.3s ease-out forwards',
+            'slide-right': 'slideRight 0.5s ease-out forwards',
+            'slide-down': 'slideDown 0.3s ease-out forwards',
+            'slide-in-right': 'slideInRight 0.5s ease-out forwards',
+            'slide-in-left': 'slideInLeft 0.5s ease-out forwards',
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'fade-out': 'fadeOut 0.4s ease-out forwards',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            scale: {
+              '0%': { transform: 'scale(0.8)', opacity: '0' },
+              '100%': { transform: 'scale(1)', opacity: '1' }
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            },
+            slideRight: {
+              '0%': { transform: 'translateX(-20px)', opacity: '0' },
+              '100%': { transform: 'translateX(0)', opacity: '1' }
+            },
+            slideDown: {
+              '0%': { transform: 'translateY(-20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            },
+            slideInRight: {
+              '0%': { transform: 'translateX(100%)', opacity: '0' },
+              '100%': { transform: 'translateX(0)', opacity: '1' }
+            },
+            slideInLeft: {
+              '0%': { transform: 'translateX(-100%)', opacity: '0' },
+              '100%': { transform: 'translateX(0)', opacity: '1' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            fadeOut: {
+              '0%': { opacity: '1' },
+              '100%': { opacity: '0' }
+            }
           }
         }
       }
     }
   </script>
+  <style>
+    /* Transition for card hover effects */
+    .product-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Staggered animation for cards */
+    .staggered-item {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    /* Toast notification */
+    .toast-notification {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 100;
+      transform: translateX(150%);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .toast-notification.show {
+      transform: translateX(0);
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(14, 165, 233, 0.5);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(14, 165, 233, 0.7);
+    }
+    
+    /* Entry animations for stats cards */
+    .stats-card {
+      opacity: 0;
+    }
+    
+    .stats-card:nth-child(1) {
+      animation: slideInLeft 0.5s ease-out 0.1s forwards;
+    }
+    
+    .stats-card:nth-child(2) {
+      animation: slideInLeft 0.5s ease-out 0.2s forwards;
+    }
+    
+    .stats-card:nth-child(3) {
+      animation: slideInLeft 0.5s ease-out 0.3s forwards;
+    }
+  </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
   <!-- Sidebar -->
@@ -40,22 +163,22 @@
       <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">Mini Market Inventory</h1>
     </div>
     <nav class="mt-5 px-2">
-      <a href="/dashboard" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-        <i class="fas fa-tachometer-alt mr-3 text-gray-400 dark:text-gray-500"></i>
+      <a href="/dashboard" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+        <i class="fas fa-tachometer-alt mr-3 text-gray-400 dark:text-gray-500 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors"></i>
         Dashboard
       </a>
       <a href="/products" class="group flex items-center px-4 py-3 text-base font-medium rounded-md bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-200">
         <i class="fas fa-box mr-3 text-primary-500 dark:text-primary-400"></i>
         Products
       </a>
-      <a href="/reports" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-        <i class="fas fa-chart-line mr-3 text-gray-400 dark:text-gray-500"></i>
+      <a href="/reports" class="group flex items-center px-4 py-3 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+        <i class="fas fa-chart-line mr-3 text-gray-400 dark:text-gray-500 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors"></i>
         Reports
       </a>
     </nav>
     <div class="absolute bottom-0 w-full border-t dark:border-gray-700 p-4">
-      <a href="#" id="logoutBtn" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-        <i class="fas fa-sign-out-alt mr-3"></i>
+      <a href="#" id="logoutBtn" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group">
+        <i class="fas fa-sign-out-alt mr-3 group-hover:animate-bounce-slow"></i>
         <span>Logout</span>
       </a>
     </div>
@@ -64,13 +187,13 @@
   <!-- Main Content -->
   <div class="ml-64 p-6">
     <!-- Top bar -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 animate-slide-down opacity-0">
       <div>
         <h2 class="text-2xl font-bold">Products Management</h2>
         <p class="text-gray-500 dark:text-gray-400">Manage your inventory items</p>
       </div>
       <div>
-        <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+        <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           <i class="fas fa-moon text-gray-600 dark:hidden"></i>
           <i class="fas fa-sun text-yellow-400 hidden dark:block"></i>
         </button>
@@ -78,7 +201,7 @@
     </div>
 
     <!-- Search and Filter Bar -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 animate-slide-up opacity-0" style="animation-delay: 0.2s">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="md:col-span-2">
           <div class="relative">
@@ -86,7 +209,7 @@
               <i class="fas fa-search text-gray-400"></i>
             </div>
             <input id="searchInput" type="text" placeholder="Search products..." 
-                   class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-4 block w-full focus:ring-primary-500 focus:border-primary-500">
+                   class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-4 block w-full focus:ring-primary-500 focus:border-primary-500 transition-all">
           </div>
         </div>
         <div>
@@ -95,7 +218,7 @@
               <i class="fas fa-filter text-gray-400"></i>
             </div>
             <select id="categoryFilter" 
-                    class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-4 block w-full focus:ring-primary-500 focus:border-primary-500">
+                    class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-4 block w-full focus:ring-primary-500 focus:border-primary-500 transition-all">
               <option value="">All Categories</option>
               <option value="Food">Food</option>
               <option value="Beverages">Beverages</option>
@@ -127,56 +250,24 @@
         </div>
         <div>
           <button id="addProductBtn" 
-                  class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center">
+                  class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center shadow-md hover:shadow-lg">
             <i class="fas fa-plus-circle mr-2"></i>
-            Add Product
+            <span>Add Product</span>
           </button>
         </div>
       </div>
     </div>
-
-    <!-- Product Stats Summary -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
-        <div class="p-3 rounded-full bg-primary-100 dark:bg-primary-900 mr-4">
-          <i class="fas fa-box-open text-primary-500 dark:text-primary-400 text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Total Products</p>
-          <p id="totalProductsCount" class="text-xl font-semibold">0</p>
-        </div>
-      </div>
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
-        <div class="p-3 rounded-full bg-green-100 dark:bg-green-900 mr-4">
-          <i class="fas fa-tags text-green-500 dark:text-green-400 text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Categories</p>
-          <p id="categoriesCount" class="text-xl font-semibold">0</p>
-        </div>
-      </div>
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
-        <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900 mr-4">
-          <i class="fas fa-cubes text-purple-500 dark:text-purple-400 text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Total Inventory Value</p>
-          <p id="inventoryValue" class="text-xl font-semibold">$0.00</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Products Container -->
     <div id="productsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
     <!-- No Products Found Message -->
-    <div id="noProductsMessage" class="hidden text-center py-12">
-      <div class="text-gray-400 dark:text-gray-500 text-6xl mb-4">
+    <div id="noProductsMessage" class="hidden text-center py-12 animate-fade-in">
+      <div class="text-gray-400 dark:text-gray-500 text-6xl mb-4 animate-float">
         <i class="fas fa-box-open"></i>
       </div>
       <h3 class="text-xl font-medium text-gray-500 dark:text-gray-400">No products found</h3>
       <p class="text-gray-400 dark:text-gray-500 mt-2">Try changing your search or add a new product</p>
-      <button id="addProductBtnEmpty" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200">
+      <button id="addProductBtnEmpty" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center mx-auto">
         <i class="fas fa-plus-circle mr-2"></i>
         Add New Product
       </button>
@@ -193,12 +284,12 @@
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
       
       <!-- Modal panel -->
-      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-scale opacity-0">
         <!-- Modal header -->
         <div class="bg-gradient-to-r from-primary-500 to-primary-700 dark:from-primary-700 dark:to-primary-900 px-6 py-4 rounded-t-xl">
           <div class="flex items-center justify-between">
             <h3 class="text-lg leading-6 font-medium text-white" id="modalTitle">Add Product</h3>
-            <button type="button" id="closeModalX" class="text-white hover:text-gray-200 focus:outline-none">
+            <button type="button" id="closeModalX" class="text-white hover:text-gray-200 focus:outline-none transition-colors">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -217,7 +308,7 @@
                     <i class="fas fa-tag text-gray-400"></i>
                   </div>
                   <input type="text" id="name" placeholder="Enter product name" required
-                         class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200">
+                         class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200 transition-all">
                 </div>
               </div>
               
@@ -228,7 +319,7 @@
                     <i class="fas fa-align-left text-gray-400"></i>
                   </div>
                   <textarea id="description" rows="3" placeholder="Enter product description"
-                            class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200"></textarea>
+                            class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200 transition-all"></textarea>
                 </div>
               </div>
               
@@ -239,7 +330,7 @@
                     <i class="fas fa-folder text-gray-400"></i>
                   </div>
                   <select id="category" 
-                          class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200">
+                          class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200 transition-all">
                           <option value="Food">Food</option>
                           <option value="Beverages">Beverages</option>
                           <option value="Snacks">Snacks</option>
@@ -277,7 +368,7 @@
                       <i class="fas fa-dollar-sign text-gray-400"></i>
                     </div>
                     <input type="number" id="price" placeholder="0.00" min="0" step="0.01" required
-                           class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200">
+                           class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200 transition-all">
                   </div>
                 </div>
                 
@@ -288,13 +379,13 @@
                       <i class="fas fa-cubes text-gray-400"></i>
                     </div>
                     <input type="number" id="stock" placeholder="0" min="0" step="1" required
-                           class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200">
+                           class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-3 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 text-gray-700 dark:text-gray-200 transition-all">
                   </div>
                 </div>
               </div>
             </div>
             
-            <div id="formError" class="hidden">
+            <div id="formError" class="hidden animate-slide-up">
               <div class="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded-lg p-4 flex">
                 <i class="fas fa-exclamation-circle text-red-500 dark:text-red-400 text-xl mr-3"></i>
                 <p class="text-sm text-red-700 dark:text-red-300" id="errorText">Please fill in all required fields.</p>
@@ -305,11 +396,11 @@
         
         <!-- Modal footer -->
         <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex items-center justify-end">
-          <button type="button" id="cancelBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+          <button type="button" id="cancelBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
             <i class="fas fa-times mr-2"></i>
             Cancel
           </button>
-          <button type="submit" form="productForm" id="saveBtn" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:scale-105">
+          <button type="submit" form="productForm" id="saveBtn" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 transform hover:scale-105">
             <i class="fas fa-save mr-2"></i>
             Save Product
           </button>
@@ -324,10 +415,10 @@
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" aria-hidden="true"></div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
       
-      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-scale opacity-0">
         <div class="bg-white dark:bg-gray-800 px-6 pt-5 pb-4">
           <div class="sm:flex sm:items-start">
-            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10 animate-pulse-slow">
               <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
             </div>
             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -341,14 +432,30 @@
           </div>
         </div>
         <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 sm:flex sm:flex-row-reverse">
-          <button type="button" id="confirmDelete" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+          <button type="button" id="confirmDelete" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm transition-all transform hover:scale-105">
             Delete
           </button>
-          <button type="button" id="cancelDelete" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          <button type="button" id="cancelDelete" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all">
             Cancel
           </button>
         </div>
       </div>
+    </div>
+  </div>
+  
+  <!-- Toast Notification for Logout -->
+  <div id="logoutToast" class="toast-notification bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-md flex items-center border-l-4 border-primary-500">
+    <div class="flex-shrink-0 mr-4">
+      <div class="bg-primary-100 dark:bg-primary-900 p-2 rounded-full">
+        <i class="fas fa-sign-out-alt text-primary-600 dark:text-primary-400"></i>
+      </div>
+    </div>
+    <div class="flex-grow">
+      <h3 class="font-medium text-gray-900 dark:text-gray-100">Logging out</h3>
+      <p class="text-sm text-gray-600 dark:text-gray-400">Thanks for using Mini Market Inventory!</p>
+    </div>
+    <div class="ml-4">
+      <div class="w-8 h-8 rounded-full border-2 border-primary-400 border-t-transparent animate-spin"></div>
     </div>
   </div>
 
@@ -377,7 +484,7 @@
     });
 
     // Get token from localStorage
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
     // Global variables
     let allProducts = [];
@@ -389,6 +496,7 @@
     const productForm = document.getElementById('productForm');
     const modalTitle = document.getElementById('modalTitle');
     const noProductsMessage = document.getElementById('noProductsMessage');
+    const logoutToast = document.getElementById('logoutToast');
     
     // Function to fetch and display all products
     async function getAllProducts() {
@@ -403,27 +511,69 @@
         
         allProducts = await res.json();
         
-        // Update stats
-        document.getElementById('totalProductsCount').textContent = allProducts.length;
+        // Update stats with animation
+        const totalProductsElement = document.getElementById('totalProductsCount');
+        animateCountUp(totalProductsElement, 0, allProducts.length);
         
         // Count unique categories
         const uniqueCategories = new Set(allProducts.map(p => p.category));
-        document.getElementById('categoriesCount').textContent = uniqueCategories.size;
+        const categoriesElement = document.getElementById('categoriesCount');
+        animateCountUp(categoriesElement, 0, uniqueCategories.size);
         
         // Calculate total inventory value
         const totalValue = allProducts.reduce((sum, product) => {
           return sum + (product.price * product.stock || 0);
         }, 0);
-        document.getElementById('inventoryValue').textContent = `$${totalValue.toFixed(2)}`;
+        
+        const inventoryValueElement = document.getElementById('inventoryValue');
+        animateCountUp(inventoryValueElement, 0, totalValue, {
+          prefix: '$',
+          decimals: 2
+        });
         
         // Display products
         displayProducts(allProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
+        
+        // Show error toast
+        showToast('Error loading products', 'Please check your connection and try again.', 'error');
       }
     }
 
-    // Function to display products in grid
+    // Function to animate a counting number
+    function animateCountUp(element, start, end, options = {}) {
+      const duration = options.duration || 1000;
+      const prefix = options.prefix || '';
+      const decimals = options.decimals || 0;
+      
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const currentCount = Math.floor(progress * (end - start) + start);
+        
+        if (decimals > 0) {
+          element.textContent = `${prefix}${currentCount.toFixed(decimals)}`;
+        } else {
+          element.textContent = `${prefix}${currentCount}`;
+        }
+        
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          if (decimals > 0) {
+            element.textContent = `${prefix}${end.toFixed(decimals)}`;
+          } else {
+            element.textContent = `${prefix}${end}`;
+          }
+        }
+      };
+      
+      window.requestAnimationFrame(step);
+    }
+
+    // Function to display products in grid with staggered animations
     function displayProducts(products) {
       const container = document.getElementById('productsContainer');
       container.innerHTML = '';
@@ -435,8 +585,8 @@
         noProductsMessage.classList.add('hidden');
       }
       
-      // Populate product cards
-      products.forEach(product => {
+      // Populate product cards with staggered animation
+      products.forEach((product, index) => {
         const stockClass = product.stock === 0 
           ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' 
           : product.stock < 10 
@@ -444,7 +594,7 @@
             : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
             
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-all duration-300 overflow-hidden';
+        card.className = 'product-card staggered-item bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden';
         card.innerHTML = `
           <div class="border-b dark:border-gray-700">
             <div class="flex justify-between items-center p-4">
@@ -477,7 +627,7 @@
                 </span>
               </div>
               <div class="flex space-x-1">
-                <button onclick="editProduct('${product.productID}')" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
+                <button onclick="editProduct('${product.productID}')" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button onclick="showDeleteModal('${product.productID}', '${product.name}')" class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors">
@@ -488,7 +638,90 @@
           </div>
         `;
         container.appendChild(card);
+        
+        // Apply staggered animation
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+          card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+        }, 50 * index);
       });
+    }
+
+    // Function to show toast notification
+    function showToast(title, message, type = 'info') {
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-md flex items-center border-l-4';
+      
+      // Set border color based on type
+      if (type === 'success') {
+        toast.classList.add('border-green-500');
+      } else if (type === 'error') {
+        toast.classList.add('border-red-500');
+      } else if (type === 'warning') {
+        toast.classList.add('border-yellow-500');
+      } else {
+        toast.classList.add('border-primary-500');
+      }
+      
+      // Set icon based on type
+      let icon;
+      if (type === 'success') {
+        icon = 'fa-check-circle text-green-600 dark:text-green-400';
+      } else if (type === 'error') {
+        icon = 'fa-exclamation-circle text-red-600 dark:text-red-400';
+      } else if (type === 'warning') {
+        icon = 'fa-exclamation-triangle text-yellow-600 dark:text-yellow-400';
+      } else {
+        icon = 'fa-info-circle text-primary-600 dark:text-primary-400';
+      }
+      
+      toast.innerHTML = `
+        <div class="flex-shrink-0 mr-4">
+          <div class="p-2 rounded-full ${type === 'success' ? 'bg-green-100 dark:bg-green-900' : 
+                                        type === 'error' ? 'bg-red-100 dark:bg-red-900' : 
+                                        type === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900' : 
+                                        'bg-primary-100 dark:bg-primary-900'}">
+            <i class="fas ${icon}"></i>
+          </div>
+        </div>
+        <div class="flex-grow">
+          <h3 class="font-medium text-gray-900 dark:text-gray-100">${title}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${message}</p>
+        </div>
+        <button class="ml-4 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      // Add to document
+      document.body.appendChild(toast);
+      
+      // Show toast with animation
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+      
+      // Add close button handler
+      toast.querySelector('button').addEventListener('click', () => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 500);
+      });
+      
+      // Auto hide after 5 seconds
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          toast.classList.remove('show');
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 500);
+        }
+      }, 5000);
     }
 
     // Filter products based on search and category
@@ -503,6 +736,11 @@
       );
       
       displayProducts(filtered);
+      
+      // Show feedback if filtering returns no results
+      if (filtered.length === 0 && allProducts.length > 0) {
+        noProductsMessage.classList.remove('hidden');
+      }
     }
 
     // Initialize event listeners
@@ -531,6 +769,8 @@
       
       if (!name || !price || stock === '') {
         formError.classList.remove('hidden');
+        setTimeout(() => formError.classList.add('animate-shake'), 10);
+        setTimeout(() => formError.classList.remove('animate-shake'), 500);
         return;
       }
       
@@ -562,6 +802,9 @@
             },
             body: JSON.stringify(productData)
           });
+          
+          // Show success toast
+          showToast('Product Updated', `${name} has been updated successfully.`, 'success');
         } else {
           // Create new product
           await fetch('/api/products', {
@@ -572,6 +815,9 @@
             },
             body: JSON.stringify(productData)
           });
+          
+          // Show success toast
+          showToast('Product Added', `${name} has been added to your inventory.`, 'success');
         }
         
         // Reset form and close modal
@@ -584,6 +830,8 @@
         console.error('Error saving product:', error);
         document.getElementById('errorText').textContent = 'Failed to save product. Please try again.';
         formError.classList.remove('hidden');
+        setTimeout(() => formError.classList.add('animate-shake'), 10);
+        setTimeout(() => formError.classList.remove('animate-shake'), 500);
       } finally {
         // Reset button state
         saveBtn.disabled = false;
@@ -599,15 +847,30 @@
       document.getElementById('formError').classList.add('hidden');
       productModal.classList.remove('hidden');
       
+      // Reset and apply entry animation
+      const modalPanel = productModal.querySelector('.inline-block');
+      modalPanel.style.opacity = '0';
+      setTimeout(() => {
+        modalPanel.style.opacity = '1';
+      }, 10);
+      
       // Focus on name field
       setTimeout(() => {
         document.getElementById('name').focus();
-      }, 100);
+      }, 300);
     }
 
     // Close product modal
     function closeProductModal() {
-      productModal.classList.add('hidden');
+      const modalPanel = productModal.querySelector('.inline-block');
+      modalPanel.classList.remove('animate-scale');
+      modalPanel.classList.add('animate-fade-out');
+      
+      setTimeout(() => {
+        productModal.classList.add('hidden');
+        modalPanel.classList.remove('animate-fade-out');
+        modalPanel.classList.add('animate-scale');
+      }, 300);
     }
 
     // Edit product
@@ -629,9 +892,17 @@
           modalTitle.innerText = `Edit Product: ${product.name}`;
           document.getElementById('formError').classList.add('hidden');
           productModal.classList.remove('hidden');
+          
+          // Reset and apply entry animation
+          const modalPanel = productModal.querySelector('.inline-block');
+          modalPanel.style.opacity = '0';
+          setTimeout(() => {
+            modalPanel.style.opacity = '1';
+          }, 10);
         }
       } catch (error) {
         console.error('Error editing product:', error);
+        showToast('Error', 'Could not edit this product. Please try again.', 'error');
       }
     }
 
@@ -641,6 +912,13 @@
       document.getElementById('deleteModalText').textContent = 
         `Are you sure you want to delete "${productName}"? This action cannot be undone.`;
       deleteModal.classList.remove('hidden');
+      
+      // Reset and apply entry animation
+      const modalPanel = deleteModal.querySelector('.inline-block');
+      modalPanel.style.opacity = '0';
+      setTimeout(() => {
+        modalPanel.style.opacity = '1';
+      }, 10);
     }
 
     // Delete product
@@ -657,11 +935,25 @@
           headers: { 'Authorization': `Bearer ${token}` } 
         });
         
+        // Find product name for the toast message
+        const deletedProduct = allProducts.find(p => p.productID === productToDelete);
+        const productName = deletedProduct ? deletedProduct.name : 'Product';
+        
         // Close modal and refresh product list
-        deleteModal.classList.add('hidden');
-        await getAllProducts();
+        const modalPanel = deleteModal.querySelector('.inline-block');
+        modalPanel.classList.add('animate-fade-out');
+        
+        setTimeout(() => {
+          deleteModal.classList.add('hidden');
+          modalPanel.classList.remove('animate-fade-out');
+          // Show success toast
+          showToast('Product Deleted', `${productName} has been removed from your inventory.`, 'success');
+          // Refresh product list
+          getAllProducts();
+        }, 300);
       } catch (error) {
         console.error('Error deleting product:', error);
+        showToast('Error', 'Could not delete this product. Please try again.', 'error');
       } finally {
         // Reset button state
         const deleteButton = document.getElementById('confirmDelete');
@@ -670,22 +962,45 @@
       }
     });
 
+    // Enhanced logout with animation
     document.getElementById('logoutBtn').addEventListener('click', function (e) {
       e.preventDefault(); // stop the anchor from navigating
-
+      
+      // Show logout toast with animation
+      logoutToast.classList.add('show');
+      
       // Remove both possible tokens
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
-
-      // Optionally show a message or redirect to login
-      alert('Logged out successfully');
-      window.location.href = 'login.html'; // redirect manually
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        
+        // Create a fade-out overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-white dark:bg-gray-900 z-50 opacity-0 transition-opacity duration-700';
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => {
+          overlay.style.opacity = '1';
+          
+          // Add logo to center of overlay
+          const logoContainer = document.createElement('div');
+          logoContainer.className = 'absolute inset-0 flex items-center justify-center flex-col';
+          logoContainer.innerHTML = `
+            <div class="bg-primary-600 dark:bg-primary-700 p-4 rounded-full shadow-lg animate-bounce-slow">
+              <i class="fas fa-shopping-cart text-white text-3xl"></i>
+            </div>
+            <h2 class="mt-4 text-primary-600 dark:text-primary-400 text-xl font-bold">See you soon!</h2>
+          `;
+          overlay.appendChild(logoContainer);
+          
+          // Redirect after animation completes
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1500);
+        }, 100);
+      }, 1000);
     });
 
-    if (!token) {
-      window.location.href = '/';
-    }
-    // Initialize the page
     getAllProducts();
   </script>
 </body>

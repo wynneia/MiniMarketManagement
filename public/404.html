@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - Mini Market Inventory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+          },
+          animation: {
+            'bounce-slow': 'bounce 3s linear infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'spin-slow': 'spin 8s linear infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .scene {
+      perspective: 1000px;
+    }
+    .box {
+      transform-style: preserve-3d;
+      animation: rotate 15s infinite linear;
+    }
+    @keyframes rotate {
+      0% { transform: rotateX(0) rotateY(0); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+    .box-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid rgba(14, 165, 233, 0.3);
+      opacity: 0.8;
+    }
+    .box-front  { transform: translateZ(50px); }
+    .box-back   { transform: rotateY(180deg) translateZ(50px); }
+    .box-right  { transform: rotateY(90deg) translateZ(50px); }
+    .box-left   { transform: rotateY(-90deg) translateZ(50px); }
+    .box-top    { transform: rotateX(90deg) translateZ(50px); }
+    .box-bottom { transform: rotateX(-90deg) translateZ(50px); }
+    
+    .dark .box-face {
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col">
+  <main class="flex-grow flex items-center justify-center">
+    <div class="container mx-auto px-4 py-16 text-center">
+      <div class="mb-10 flex justify-center">
+        <div class="scene relative w-32 h-32 mb-8">
+          <div class="box w-full h-full relative">
+            <div class="box-face box-front bg-gray-100/10 dark:bg-primary-900/10 rounded-lg"></div>
+            <div class="box-face box-back bg-gray-100/10 dark:bg-primary-900/10 rounded-lg"></div>
+            <div class="box-face box-right bg-gray-100/10 dark:bg-primary-900/10 rounded-lg"></div>
+            <div class="box-face box-left bg-gray-100/10 dark:bg-primary-900/10 rounded-lg"></div>
+            <div class="box-face box-top bg-gray-100/10 dark:bg-primary-900/10 rounded-lg"></div>
+            <div class="box-face box-bottom bg-gray-100/10 dark:bg-primary-900/10 rounded-lg"></div>
+            
+            <!-- Centered question mark -->
+            <div class="absolute inset-0 flex items-center justify-center text-6xl font-bold text-primary-500 dark:text-primary-400 animate-pulse-slow">
+              404
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <h1 class="text-5xl md:text-6xl font-bold text-gray-800 dark:text-white mb-4">Page Not Found</h1>
+      <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+        The page you're looking for doesn't exist or has been moved to another location.
+      </p>
+      
+      <div class="space-y-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md mx-auto mb-8">
+          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">What would you like to do?</h2>
+          
+          <div id="auth-nav" class="grid grid-cols-2 gap-4 hidden">
+            <a href="/dashboard" class="flex flex-col items-center p-4 bg-primary-50 dark:bg-primary-900/30 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-800/50 transition-colors">
+              <i class="fas fa-tachometer-alt text-2xl text-primary-500 dark:text-primary-400 mb-2"></i>
+              <span class="text-gray-700 dark:text-gray-200">Dashboard</span>
+            </a>
+            
+            <a href="/products" class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+              <i class="fas fa-box text-2xl text-gray-600 dark:text-gray-300 mb-2"></i>
+              <span class="text-gray-700 dark:text-gray-200">Products</span>
+            </a>
+            
+            <a href="/reports" class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+              <i class="fas fa-chart-line text-2xl text-gray-600 dark:text-gray-300 mb-2"></i>
+              <span class="text-gray-700 dark:text-gray-200">Reports</span>
+            </a>
+            
+            <button id="goBackBtn" class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+              <i class="fas fa-arrow-left text-2xl text-gray-600 dark:text-gray-300 mb-2"></i>
+              <span class="text-gray-700 dark:text-gray-200">Go Back</span>
+            </button>
+          </div>
+
+          <div id="non-auth-nav" class="grid grid-cols-2 gap-4 hidden">
+            <a href="/login" class="flex flex-col items-center p-4 bg-primary-50 dark:bg-primary-900/30 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-800/50 transition-colors">
+              <i class="fas fa-sign-in-alt text-2xl text-primary-500 dark:text-primary-400 mb-2"></i>
+              <span class="text-gray-700 dark:text-gray-200">Login</span>
+            </a>
+            
+            <a href="/" class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+              <i class="fas fa-home text-2xl text-gray-600 dark:text-gray-300 mb-2"></i>
+              <span class="text-gray-700 dark:text-gray-200">Home</span>
+            </a>
+            
+            <button id="goBackBtn2" class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+              <i class="fas fa-arrow-left text-2xl text-gray-600 dark:text-gray-300 mb-2"></i>
+              <span class="text-gray-700 dark:text-gray-200">Go Back</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-gray-500 dark:text-gray-400 text-sm mt-12">
+        <p>If you believe this is an error, please contact the system administrator.</p>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="py-4 px-6 bg-white dark:bg-gray-800 shadow-md">
+    <div class="container mx-auto flex items-center justify-between">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        &copy; Mini Market Inventory Management
+      </p>
+      <div>
+        <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i class="fas fa-moon text-gray-600 dark:hidden"></i>
+          <i class="fas fa-sun text-yellow-400 hidden dark:block"></i>
+        </button>
+      </div>
+    </div>
+  </footer>
+  
+  <script>
+    // Check authentication status
+    const isAuthenticated = () => {
+      return !!(localStorage.getItem('token') || sessionStorage.getItem('token'));
+    };
+
+    // Show appropriate navigation based on auth status
+    const authNav = document.getElementById('auth-nav');
+    const nonAuthNav = document.getElementById('non-auth-nav');
+    
+    if (isAuthenticated()) {
+      authNav.classList.remove('hidden');
+    } else {
+      nonAuthNav.classList.remove('hidden');
+    }
+    
+    // Dark mode toggle
+    const html = document.documentElement;
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    
+    // Check for saved theme preference or respect OS preference
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+    
+    // Toggle dark/light mode
+    darkModeToggle.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // Go back button functionality - both buttons
+    document.getElementById('goBackBtn').addEventListener('click', () => {
+      history.back();
+    });
+    
+    document.getElementById('goBackBtn2').addEventListener('click', () => {
+      history.back();
+    });
+    
+    // Random 404 messages
+    const errorMessages = [
+      "Houston, we have a problem.",
+      "Oops! Page not in this dimension.",
+      "This page is playing hide and seek.",
+      "The page took a vacation.",
+      "This page is in another castle.",
+      "Error 404: Page not in inventory."
+    ];
+    
+    // Set random message
+    document.querySelector('p.text-xl').textContent = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+  </script>
+</body>
+</html>

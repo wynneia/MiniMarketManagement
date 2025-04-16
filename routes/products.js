@@ -24,10 +24,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update product using the counter-based productID
 router.put('/:productID', async (req, res) => {
   try {
-    // Find and update the product using the custom productID field
     const product = await Product.findOneAndUpdate(
       { productID: req.params.productID },
       req.body,
@@ -42,7 +40,6 @@ router.put('/:productID', async (req, res) => {
   }
 });
 
-// Delete product using the counter-based productID (optional update)
 router.delete('/:productID', async (req, res) => {
   try {
     const product = await Product.findOneAndDelete({ productID: req.params.productID });
