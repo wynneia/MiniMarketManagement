@@ -101,14 +101,103 @@
     .toast-notification.show {
       transform: translateX(0);
     }
+
+    /* Mobile sidebar */
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none; /* Hide sidebar completely on mobile */
+      }
+      
+      .sidebar-overlay {
+        display: none;
+      }
+    }
+    
+    /* Responsive adjustments */
+    .responsive-pad {
+      transition: padding-left 0.3s ease;
+    }
+    
+    /* Mobile bottom navigation */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 50;
+      padding: 8px 0;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .dark .bottom-nav {
+      background-color: #1f2937;
+      border-top-color: #374151;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+      .bottom-nav {
+        display: flex;
+      }
+      
+      #mainContent {
+        margin-left: 0 !important;
+        padding-bottom: 80px;
+      }
+      
+      /* Fix chart height on small screens */
+      .chart-container {
+        height: 250px !important;
+      }
+    }
+    
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    
+    .dark .bottom-nav-item {
+      color: #9ca3af;
+    }
+    
+    .bottom-nav-item.active {
+      color: #0ea5e9;
+    }
+    
+    .dark .bottom-nav-item.active {
+      color: #38bdf8;
+    }
+    
+    .bottom-nav-item i {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
+  <!-- Mobile menu button (only visible on mobile) -->
+  
+  <!-- Overlay for mobile sidebar -->
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 sidebar-overlay" style="display: none;"></div>
+
   <!-- Sidebar -->
-  <div class="fixed inset-y-0 left-0 bg-white dark:bg-gray-800 w-64 shadow-lg transition-all duration-300 transform z-10 sidebar">
-    <div class="flex items-center justify-center h-16 border-b dark:border-gray-700">
+  <div id="sidebar" class="fixed inset-y-0 left-0 bg-white dark:bg-gray-800 w-64 shadow-lg transition-all duration-300 transform z-20 sidebar">
+    <div class="flex items-center justify-between h-16 border-b dark:border-gray-700 px-4">
       <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">Mini Market Inventory</h1>
+      <button id="closeSidebarBtn" class="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
     <nav class="mt-5 px-2">
       <a href="/dashboard" class="group flex items-center px-4 py-3 text-base font-medium rounded-md bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-200">
@@ -123,26 +212,26 @@
         <i class="fas fa-chart-line mr-3 text-gray-400 dark:text-gray-500"></i>
         Reports
       </a>
-      </nav>
+    </nav>
       
-      <div class="absolute bottom-0 w-full border-t dark:border-gray-700 p-4">
-        <a href="#" id="logoutBtn" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-          <i class="fas fa-sign-out-alt mr-3"></i>
-          <span>Logout</span>
-        </a>
-      </div>
+    <div class="absolute bottom-0 w-full border-t dark:border-gray-700 p-4">
+      <a href="#" id="logoutBtn" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+        <i class="fas fa-sign-out-alt mr-3"></i>
+        <span>Logout</span>
+      </a>
+    </div>
   </div>      
 
   <!-- Main Content -->
-  <div class="ml-64 p-6">
+  <div id="mainContent" class="lg:ml-64 p-4 md:p-6 transition-all duration-300 responsive-pad">
     <!-- Top bar -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 pt-8 lg:pt-0">
       <div>
-        <h2 class="text-2xl font-bold">Dashboard Overview</h2>
+        <h2 class="text-xl md:text-2xl font-bold">Dashboard Overview</h2>
         <p class="text-gray-500 dark:text-gray-400">Welcome to Mini Market Inventory</p>
       </div>
-      <div>
-        <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+      <div class="flex items-center">
+        <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 mr-2">
           <i class="fas fa-moon text-gray-600 dark:hidden"></i>
           <i class="fas fa-sun text-yellow-400 hidden dark:block"></i>
         </button>
@@ -150,8 +239,8 @@
     </div>
     
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <div id="totalProductsCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.1s">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
+      <div id="totalProductsCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.1s">
         <div class="flex items-center justify-between mb-4">
           <div>
             <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Products</h3>
@@ -161,12 +250,9 @@
             <i class="fas fa-box text-primary-500 dark:text-primary-400 text-xl"></i>
           </div>
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          <span id="productChange" class="text-green-500"><i class="fas fa-arrow-up"></i> <span id="productChangeValue">0%</span></span> from last month
-        </div>
       </div>
       
-      <div id="totalStockCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.2s">
+      <div id="totalStockCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.2s">
         <div class="flex items-center justify-between mb-4">
           <div>
             <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Stock</h3>
@@ -176,12 +262,9 @@
             <i class="fas fa-warehouse text-green-500 dark:text-green-400 text-xl"></i>
           </div>
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          <span class="text-green-500"><i class="fas fa-arrow-up"></i> <span id="stockChangeValue">0%</span></span> from last month
-        </div>
       </div>
       
-      <div id="lowStockCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.3s">
+      <div id="lowStockCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.3s">
         <div class="flex items-center justify-between mb-4">
           <div>
             <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Low Stock Alerts</h3>
@@ -191,12 +274,9 @@
             <i class="fas fa-exclamation-triangle text-orange-500 dark:text-orange-400 text-xl"></i>
           </div>
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          <span class="text-red-500"><i class="fas fa-arrow-up"></i> <span id="lowStockChangeValue">0</span></span> new alerts today
-        </div>
       </div>
       
-      <div id="outOfStockCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.4s">
+      <div id="outOfStockCard" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 transition-all duration-300 hover:shadow-lg animate-fade-in opacity-0" style="animation-delay: 0.4s">
         <div class="flex items-center justify-between mb-4">
           <div>
             <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Out of Stock</h3>
@@ -206,36 +286,33 @@
             <i class="fas fa-times-circle text-red-500 dark:text-red-400 text-xl"></i>
           </div>
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          <span class="text-red-500"><i class="fas fa-arrow-down"></i> <span id="outOfStockResolved">0</span></span> resolved today
-        </div>
       </div>
     </div>
     
     <!-- Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-      <div id="categoryChartContainer" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 animate-fade-in opacity-0" style="animation-delay: 0.5s">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
+      <div id="categoryChartContainer" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 animate-fade-in opacity-0" style="animation-delay: 0.5s">
         <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Stock Levels By Category</h3>
-        <div class="h-[250px] chart-loading">
+        <div class="h-[250px] md:h-[300px] chart-loading chart-container">
           <canvas id="categoryChart"></canvas>
         </div>
       </div>
       
-      <div id="inventoryValueChartContainer" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 animate-fade-in opacity-0" style="animation-delay: 0.6s">
+      <div id="inventoryValueChartContainer" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 animate-fade-in opacity-0" style="animation-delay: 0.6s">
         <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Inventory Value Distribution</h3>
-        <div class="h-[250px] chart-loading">
+        <div class="h-[250px] md:h-[300px] chart-loading chart-container">
           <canvas id="inventoryValueChart"></canvas>
         </div>
       </div>
     </div>
     
     <!-- Low Stock & Inventory Insights -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
       <div id="lowStockTableContainer" class="bg-white dark:bg-gray-800 rounded-lg shadow animate-fade-in opacity-0" style="animation-delay: 0.7s">
-        <div class="p-6 border-b dark:border-gray-700">
+        <div class="p-4 md:p-6 border-b dark:border-gray-700">
           <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Low Stock Products</h3>
         </div>
-        <div class="p-6 max-h-80 overflow-y-auto">
+        <div class="p-4 md:p-6 max-h-80 overflow-y-auto">
           <div id="tableLoading" class="py-10 flex justify-center">
             <div class="text-center">
               <i class="fas fa-box-open text-4xl text-primary-400 dark:text-primary-500 animate-bounce-slow"></i>
@@ -245,10 +322,10 @@
           <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden" id="lowStockTable">
             <thead class="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th class="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                <th class="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                <th class="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+                <th class="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="lowStockTableBody">
@@ -327,9 +404,8 @@
         </div>
       </div>
     </div>
-  </div>
   
-  <!-- Restock Modal (Enhanced Version) -->
+  <!-- Restock Modal (Enhanced for mobile) -->
   <div id="restockModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
@@ -339,7 +415,7 @@
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
       
       <!-- Modal panel -->
-      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle max-w-lg w-full">
         <!-- Modal header -->
         <div class="bg-gradient-to-r from-primary-500 to-primary-700 dark:from-primary-700 dark:to-primary-900 px-6 py-4 rounded-t-xl">
           <div class="flex items-center justify-between">
@@ -425,12 +501,12 @@
         </div>
         
         <!-- Modal footer -->
-        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex items-center justify-end">
-          <button type="button" id="cancelRestock" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:py-4 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-end">
+          <button type="button" id="cancelRestock" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <i class="fas fa-times mr-2"></i>
             Cancel
           </button>
-          <button type="button" id="confirmRestock" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:scale-105">
+          <button type="button" id="confirmRestock" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:scale-105">
             <i class="fas fa-save mr-2"></i>
             Update Stock
           </button>
@@ -455,6 +531,65 @@
     </div>
   </div>
   
+  <!-- Mobile Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="/dashboard" class="bottom-nav-item active">
+      <i class="fas fa-tachometer-alt"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="/products" class="bottom-nav-item">
+      <i class="fas fa-box"></i>
+      <span>Products</span>
+    </a>
+    <a href="/reports" class="bottom-nav-item">
+      <i class="fas fa-chart-line"></i>
+      <span>Reports</span>
+    </a>
+    <a href="#" class="bottom-nav-item" id="mobileMenu">
+      <i class="fas fa-bars"></i>
+      <span>Menu</span>
+    </a>
+  </div>
+  
+  <!-- Mobile Menu Modal -->
+  <div id="mobileMenuModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50" id="mobileMenuOverlay"></div>
+    <div class="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 rounded-t-xl transform transition-transform duration-300" id="mobileMenuContent">
+      <div class="p-4 border-b dark:border-gray-700 flex items-center justify-between">
+        <h3 class="font-medium text-gray-900 dark:text-white">Menu</h3>
+        <button id="closeMobileMenu" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-4">
+        <a href="/dashboard" class="flex items-center p-3 mb-2 rounded-lg bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300">
+          <i class="fas fa-tachometer-alt mr-3"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/products" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+          <i class="fas fa-box mr-3"></i>
+          <span>Products</span>
+        </a>
+        <a href="/reports" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+          <i class="fas fa-chart-line mr-3"></i>
+          <span>Reports</span>
+        </a>
+        <div class="border-t dark:border-gray-700 my-3 pt-3">
+          <button id="darkModeToggleMobile" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 w-full">
+            <i class="fas fa-moon mr-3 dark:hidden"></i>
+            <i class="fas fa-sun mr-3 hidden dark:block text-yellow-400"></i>
+            <span class="dark:hidden">Dark Mode</span>
+            <span class="hidden dark:block">Light Mode</span>
+          </button>
+          <a href="#" id="logoutBtnMobile" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-red-600 dark:text-red-400">
+            <i class="fas fa-sign-out-alt mr-3"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Dark mode toggle with proper functionality and localStorage persistence
     const html = document.documentElement;
@@ -579,17 +714,6 @@
         // Generate performance metrics based on real data
         updateTopCategories(allProducts);
         
-        // Calculate changes for metrics (simulated)
-        const productChange = Math.floor(Math.random() * 10) + 5;
-        const stockChange = Math.floor(Math.random() * 15) + 3;
-        const lowStockChange = Math.floor(Math.random() * 5) + 1;
-        const outOfStockResolved = Math.floor(Math.random() * 3) + 1;
-        
-        document.getElementById('productChangeValue').innerText = `${productChange}%`;
-        document.getElementById('stockChangeValue').innerText = `${stockChange}%`;
-        document.getElementById('lowStockChangeValue').innerText = lowStockChange;
-        document.getElementById('outOfStockResolved').innerText = outOfStockResolved;
-        
         // Populate low stock table
         const tableBody = document.getElementById('lowStockTableBody');
         tableBody.innerHTML = '';
@@ -614,22 +738,22 @@
             row.style.animationDelay = `${lowStockProducts.indexOf(product) * 0.1}s`;
             
             row.innerHTML = `
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-2 md:px-6 py-3 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">${product.name}</div>
+                  <div class="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[100px] md:max-w-none">${product.name}</div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-2 md:px-6 py-3 whitespace-nowrap">
                 <div class="text-sm text-gray-500 dark:text-gray-400">${product.category || 'N/A'}</div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-2 md:px-6 py-3 whitespace-nowrap">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.stock === 0 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200'}">
                   ${product.stock}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <td class="px-2 md:px-6 py-3 whitespace-nowrap text-sm font-medium">
                 <button class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 restock-btn flex items-center" data-id="${product.productID}" data-name="${product.name}" data-stock="${product.stock}" data-price="${product.price || 0}">
-                  <i class="fas fa-plus-circle mr-1"></i> Restock
+                  <i class="fas fa-plus-circle mr-1"></i> <span class="hidden sm:inline">Restock</span>
                 </button>
               </td>
             `;
@@ -750,10 +874,10 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'right',
+              position: window.innerWidth < 768 ? 'bottom' : 'right',
               labels: {
                 boxWidth: 12,
                 font: {
@@ -781,7 +905,7 @@
       });
     }
     
-    // Create inventory value chart (replacing trend chart)
+    // Adjust inventory value chart for responsive design
     function createInventoryValueChart(products) {
       // Group products by category and calculate value
       const categories = {};
@@ -829,7 +953,7 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: true,
@@ -1043,6 +1167,427 @@
       }, 1000);
     });
 
+    // Mobile sidebar functionality
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    //const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const mainContent = document.getElementById('mainContent');
+    
+    // Toggle sidebar
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+      
+      // Disable body scroll when sidebar is open on mobile
+      if (sidebar.classList.contains('open')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+    
+    // Open sidebar on menu button click
+    //mobileMenuBtn.addEventListener('click', toggleSidebar);
+    
+    // Close sidebar when X button or overlay is clicked
+    closeSidebarBtn.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+    
+    // Close sidebar when a menu item is clicked on mobile
+    document.querySelectorAll('#sidebar a').forEach(item => {
+      item.addEventListener('click', () => {
+        if (window.innerWidth < 1024) {
+          toggleSidebar();
+        }
+      });
+    });
+    
+    // Check for screen resize to adjust sidebar
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024) {
+        sidebar.classList.remove('open');
+        sidebarOverlay.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Mobile bottom navigation functionality
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuModal = document.getElementById('mobileMenuModal');
+    const mobileMenuContent = document.getElementById('mobileMenuContent');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const closeMobileMenux = document.getElementById('closeMobileMenu');
+    const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
+    const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+    
+    // Function to open mobile menu modal
+    function openMobileMenu() {
+      mobileMenuModal.classList.remove('hidden');
+      
+      // Slide up animation
+      mobileMenuContent.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        mobileMenuContent.style.transform = 'translateY(0)';
+      }, 10);
+      
+      // Prevent body scrolling
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Function to close mobile menu modal
+    function closeMobileMenu() {
+      mobileMenuContent.style.transform = 'translateY(100%)';
+      
+      setTimeout(() => {
+        mobileMenuModal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    }
+    
+    // Event listeners for mobile menu
+    mobileMenu.addEventListener('click', openMobileMenu);
+    closeMobileMenux.addEventListener('click', closeMobileMenu);
+    mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    
+    // Mobile dark mode toggle
+    darkModeToggleMobile.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // Mobile logout button
+    logoutBtnMobile.addEventListener('click', function(e) {
+      e.preventDefault();
+      closeMobileMenu();
+      
+      // Show logout toast with animation
+      logoutToast.classList.add('show');
+      
+      // Same logout logic as the sidebar logout button
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-white dark:bg-gray-900 z-50 opacity-0 transition-opacity duration-700';
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => {
+          overlay.style.opacity = '1';
+          
+          const logoContainer = document.createElement('div');
+          logoContainer.className = 'absolute inset-0 flex items-center justify-center flex-col';
+          logoContainer.innerHTML = `
+            <div class="bg-primary-600 dark:bg-primary-700 p-4 rounded-full shadow-lg animate-bounce-slow">
+              <i class="fas fa-shopping-cart text-white text-3xl"></i>
+            </div>
+            <h2 class="mt-4 text-primary-600 dark:text-primary-400 text-xl font-bold">See you soon!</h2>
+          `;
+          overlay.appendChild(logoContainer);
+          
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1500);
+        }, 100);
+      }, 1000);
+    });
+    
+    // NEW FUNCTIONS FOR ADDITIONAL WIDGETS
+    
+    // Generate simulated activity feed based on real product data
+    function generateActivityFeed(products) {
+      const activityFeed = document.getElementById('activityFeed');
+      const activityLoader = document.getElementById('activityFeedLoader');
+      
+      // Hide loader
+      setTimeout(() => {
+        activityLoader.classList.add('hidden');
+        activityFeed.classList.remove('hidden');
+      }, 800);
+      
+      // Clear existing activities
+      activityFeed.innerHTML = '';
+      
+      // Generate activities based on real product data
+      const activities = [];
+      
+      // Low stock activities
+      const lowStockProducts = products.filter(p => p.stock < 10 && p.stock > 0);
+      lowStockProducts.slice(0, 3).forEach(product => {
+        activities.push({
+          type: 'warning',
+          message: `${product.name} is running low on stock (${product.stock} remaining)`,
+          time: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago, fixed time
+          icon: 'exclamation-triangle',
+          color: 'text-orange-500 dark:text-orange-400',
+          bgColor: 'bg-orange-100 dark:bg-orange-900/30'
+        });
+      });
+      
+      // Out of stock activities
+      const outOfStockProducts = products.filter(p => p.stock === 0);
+      outOfStockProducts.slice(0, 2).forEach(product => {
+        activities.push({
+          type: 'danger',
+          message: `${product.name} is out of stock!`,
+          time: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago, fixed time
+          icon: 'times-circle',
+          color: 'text-red-500 dark:text-red-400',
+          bgColor: 'bg-red-100 dark:bg-red-900/30'
+        });
+      });
+      
+      // Stock update activities - simulate restocks for products with good stock
+      const goodStockProducts = products.filter(p => p.stock > 20);
+      shuffleArray(goodStockProducts).slice(0, 4).forEach((product, idx) => {
+        const restockAmount = Math.floor(Math.random() * 20) + 5;
+        activities.push({
+          type: 'success',
+          message: `Added ${restockAmount} units to ${product.name}`,
+          time: new Date(Date.now() - 1000 * 60 * 60 * 24 * (idx + 1)), // 1-4 days ago based on index
+          icon: 'check-circle',
+          color: 'text-green-500 dark:text-green-400',
+          bgColor: 'bg-green-100 dark:bg-green-900/30'
+        });
+      });
+      
+      // Inventory check activity
+      activities.push({
+        type: 'info',
+        message: 'Monthly inventory check completed',
+        time: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // A week ago
+        icon: 'clipboard-check',
+        color: 'text-blue-500 dark:text-blue-400',
+        bgColor: 'bg-blue-100 dark:bg-blue-900/30'
+      });
+      
+      // Sort activities by time (most recent first)
+      activities.sort((a, b) => b.time - a.time);
+      
+      // Render activity feed
+      activities.forEach(activity => {
+        const activityEl = document.createElement('div');
+        activityEl.className = `mb-4 ${activity.bgColor} p-3 rounded-lg border border-${activity.color.split(' ')[0].replace('text', 'border')}-200 dark:border-${activity.color.split(' ')[0].replace('text', 'border')}-800/30 animate-fade-in`;
+        
+        const timeAgo = getTimeAgo(activity.time);
+        
+        activityEl.innerHTML = `
+          <div class="flex items-start">
+            <div class="flex-shrink-0 ${activity.color}">
+              <i class="fas fa-${activity.icon} text-lg"></i>
+            </div>
+            <div class="ml-3 flex-1">
+              <p class="text-sm font-medium text-gray-800 dark:text-gray-200">${activity.message}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${timeAgo}</p>
+            </div>
+          </div>
+        `;
+        
+        activityFeed.appendChild(activityEl);
+      });
+    }
+    
+    // Create price analysis chart
+    function createPriceAnalysis(products) {
+      // Calculate price metrics
+      const prices = products.map(p => p.price || 0).filter(price => price > 0);
+      
+      // If no valid prices, show a message
+      if (prices.length === 0) {
+        document.getElementById('priceAnalysisContainer').innerHTML = `
+          <div class="p-4 md:p-6">
+            <div class="flex items-center justify-center h-48">
+              <div class="text-center">
+                <i class="fas fa-tag text-gray-400 text-4xl mb-3"></i>
+                <p class="text-gray-500 dark:text-gray-400">No price data available</p>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      // Calculate price metrics
+      const avgPrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      
+      // Update price metrics display
+      document.getElementById('avgPrice').textContent = `$${avgPrice.toFixed(2)}`;
+      document.getElementById('priceRange').textContent = `$${minPrice.toFixed(2)} - $${maxPrice.toFixed(2)}`;
+      
+      // Create price distribution chart
+      const priceRanges = [
+        { min: 0, max: 10, label: '$0-$10' },
+        { min: 10, max: 25, label: '$10-$25' },
+        { min: 25, max: 50, label: '$25-$50' },
+        { min: 50, max: 100, label: '$50-$100' },
+        { min: 100, max: Infinity, label: '$100+' }
+      ];
+      
+      const priceDistribution = priceRanges.map(range => {
+        return prices.filter(price => price > range.min && price <= range.max).length;
+      });
+      
+      const ctx = document.getElementById('priceDistributionChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: priceRanges.map(range => range.label),
+          datasets: [{
+            label: 'Products',
+            data: priceDistribution,
+            backgroundColor: 'rgba(14, 165, 233, 0.7)',
+            borderColor: 'rgba(14, 165, 233, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Number of Products'
+              },
+              ticks: {
+                precision: 0
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `${context.raw} products`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Generate product rankings
+    function generateProductRankings(products) {
+      const highValueContainer = document.getElementById('highValueProducts');
+      const lowValueContainer = document.getElementById('lowValueProducts');
+      
+      // Clear existing content
+      highValueContainer.innerHTML = '';
+      lowValueContainer.innerHTML = '';
+      
+      // Calculate product values (price * stock)
+      const productsWithValue = products.map(product => {
+        return {
+          ...product,
+          value: (product.price || 0) * product.stock
+        };
+      });
+      
+      // Get highest value products
+      const highestValueProducts = [...productsWithValue]
+        .filter(p => p.value > 0)
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 3);
+      
+      // Get lowest value products (with stock > 0)
+      const lowestValueProducts = [...productsWithValue]
+        .filter(p => p.stock > 0 && p.value > 0)
+        .sort((a, b) => a.value - b.value)
+        .slice(0, 3);
+      
+      // Render highest value products
+      if (highestValueProducts.length === 0) {
+        highValueContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No product data available</p>';
+      } else {
+        highestValueProducts.forEach(product => {
+          const el = document.createElement('div');
+          el.className = 'flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded-lg animate-fade-in';
+          el.innerHTML = `
+            <div class="flex items-center">
+              <div class="bg-green-100 dark:bg-green-800 p-1.5 rounded text-green-600 dark:text-green-400 mr-3">
+                <i class="fas fa-box text-xs"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate max-w-[120px]">${product.name}</span>
+            </div>
+            <div class="text-sm font-bold text-green-600 dark:text-green-400">$${product.value.toFixed(2)}</div>
+          `;
+          highValueContainer.appendChild(el);
+        });
+      }
+      
+      // Render lowest value products
+      if (lowestValueProducts.length === 0) {
+        lowValueContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No product data available</p>';
+      } else {
+        lowestValueProducts.forEach(product => {
+          const el = document.createElement('div');
+          el.className = 'flex items-center justify-between p-2 bg-red-50 dark:bg-red-900/20 rounded-lg animate-fade-in';
+          el.innerHTML = `
+            <div class="flex items-center">
+              <div class="bg-red-100 dark:bg-red-800 p-1.5 rounded text-red-600 dark:text-red-400 mr-3">
+                <i class="fas fa-box text-xs"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate max-w-[120px]">${product.name}</span>
+            </div>
+            <div class="text-sm font-bold text-red-600 dark:text-red-400">$${product.value.toFixed(2)}</div>
+          `;
+          lowValueContainer.appendChild(el);
+        });
+      }
+    }
+    
+    // Utility functions
+    
+    // Get random past time (hours ago)
+    function getRandomPastTime(minHours, maxHours) {
+      const now = new Date();
+      const hoursAgo = Math.floor(Math.random() * (maxHours - minHours + 1)) + minHours;
+      return new Date(now.getTime() - hoursAgo * 60 * 60 * 1000);
+    }
+    
+    // Get time ago string
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffMs = now - date;
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHour = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHour / 24);
+      
+      if (diffDay > 0) {
+        return `${diffDay} day${diffDay > 1 ? 's' : ''} ago`;
+      } else if (diffHour > 0) {
+        return `${diffHour} hour${diffHour > 1 ? 's' : ''} ago`;
+      } else if (diffMin > 0) {
+        return `${diffMin} minute${diffMin > 1 ? 's' : ''} ago`;
+      } else {
+        return 'Just now';
+      }
+    }
+    
+    // Shuffle array (for random selection)
+    function shuffleArray(array) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+    
     // Initialize dashboard
     fetchMetrics();
   </script>

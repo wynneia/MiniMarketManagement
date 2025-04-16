@@ -54,6 +54,112 @@
     .toast-notification.show {
       transform: translateX(0);
     }
+    
+    /* Mobile sidebar */
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none; /* Hide sidebar completely on mobile */
+      }
+    }
+    
+    /* Bottom navigation for mobile */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 51; /* Increased z-index to ensure it stays on top */
+      padding: 10px 0; /* Consistent padding */
+      border-top: 1px solid #e5e7eb;
+      height: auto; /* Ensure proper height */
+    }
+    
+    .dark .bottom-nav {
+      background-color: #1f2937;
+      border-top-color: #374151;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+      .bottom-nav {
+        display: flex;
+      }
+      
+      .ml-64 {
+        margin-left: 0 !important;
+        padding-bottom: 100px !important; /* Increased padding to prevent overlap */
+      }
+      
+      /* Improve form layout on mobile */
+      .grid-cols-1, .grid-cols-2 {
+        grid-template-columns: 1fr !important;
+      }
+      
+      /* Chart responsive adjustments */
+      .h-\[300px\] {
+        height: 250px !important;
+      }
+      
+      /* Ensure bottom toast doesn't overlap with navigation */
+      .toast-notification {
+        bottom: 70px;
+      }
+      
+      /* Add margin to last items */
+      #reportsHistory {
+        margin-bottom: 1.5rem;
+      }
+      
+      .mt-6 {
+        margin-bottom: 2rem; /* Extra margin for the chart container */
+      }
+    }
+    
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    
+    .dark .bottom-nav-item {
+      color: #9ca3af;
+    }
+    
+    .bottom-nav-item.active {
+      color: #0ea5e9;
+    }
+    
+    .dark .bottom-nav-item.active {
+      color: #38bdf8;
+    }
+    
+    .bottom-nav-item i {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    /* Fade-in animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -86,7 +192,7 @@
   
 
   <!-- Main Content -->
-  <div class="ml-64 p-6">
+  <div class="ml-64 p-6 fade-in">
     <!-- Top bar -->
     <div class="flex justify-between items-center mb-6">
       <div>
@@ -369,6 +475,65 @@
     </div>
     <div class="ml-4">
       <div class="w-8 h-8 rounded-full border-2 border-primary-400 border-t-transparent animate-spin"></div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="/dashboard" class="bottom-nav-item">
+      <i class="fas fa-tachometer-alt"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="/products" class="bottom-nav-item">
+      <i class="fas fa-box"></i>
+      <span>Products</span>
+    </a>
+    <a href="/reports" class="bottom-nav-item active">
+      <i class="fas fa-chart-line"></i>
+      <span>Reports</span>
+    </a>
+    <a href="#" class="bottom-nav-item" id="mobileMenu">
+      <i class="fas fa-bars"></i>
+      <span>Menu</span>
+    </a>
+  </div>
+  
+  <!-- Mobile Menu Modal -->
+  <div id="mobileMenuModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50" id="mobileMenuOverlay"></div>
+    <div class="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 rounded-t-xl transform transition-transform duration-300" id="mobileMenuContent">
+      <div class="p-4 border-b dark:border-gray-700 flex items-center justify-between">
+        <h3 class="font-medium text-gray-900 dark:text-white">Menu</h3>
+        <button id="closeMobileMenu" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-4">
+        <a href="/dashboard" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+          <i class="fas fa-tachometer-alt mr-3"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/products" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+          <i class="fas fa-box mr-3"></i>
+          <span>Products</span>
+        </a>
+        <a href="/reports" class="flex items-center p-3 mb-2 rounded-lg bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300">
+          <i class="fas fa-chart-line mr-3"></i>
+          <span>Reports</span>
+        </a>
+        <div class="border-t dark:border-gray-700 my-3 pt-3">
+          <button id="darkModeToggleMobile" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 w-full">
+            <i class="fas fa-moon mr-3 dark:hidden"></i>
+            <i class="fas fa-sun mr-3 hidden dark:block text-yellow-400"></i>
+            <span class="dark:hidden">Dark Mode</span>
+            <span class="hidden dark:block">Light Mode</span>
+          </button>
+          <a href="#" id="logoutBtnMobile" class="flex items-center p-3 mb-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-red-600 dark:text-red-400">
+            <i class="fas fa-sign-out-alt mr-3"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -963,7 +1128,7 @@
       });
       
       document.getElementById('totalReportsCount').textContent = totalReports;
-      document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+      document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
       document.getElementById('totalItemsSold').textContent = totalItemsSold;
     }
 
@@ -983,7 +1148,6 @@
           const div = document.createElement('div');
           div.className = 'bg-gray-50 dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 overflow-hidden transition-all duration-300 hover:shadow-md';
           
-          // Determine report badge color
           let badgeClass = 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200';
           if (report.reportType === 'Monthly') {
             badgeClass = 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200';
@@ -991,7 +1155,6 @@
             badgeClass = 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
           }
           
-          // Format date
           const reportDate = new Date(report.reportDate);
           const formattedDate = reportDate.toLocaleDateString('en-US', { 
             year: 'numeric', 
@@ -1003,13 +1166,26 @@
           
           let soldItemsHTML = '';
           report.soldItems.forEach(item => {
-            let productName = item.product.name;
-            let productID = '';
-            const product = allProducts.find(p => p.productID === item.product);
+            let productName = "Unknown Product";
+            let productID = "";
             
-            if (product) {
-              productName = product.name;
-              productID = product.productID;
+            // Check if item.product exists and its type
+            if (item.product) {
+              if (typeof item.product === 'object' && item.product.name) {
+                // If item.product is an object with name (MongoDB populated reference)
+                productName = item.product.name;
+                productID = item.product.productID || "";
+              } else {
+                // If item.product is an ID (string or MongoDB ObjectId)
+                const product = allProducts.find(p => 
+                  p._id === item.product || p.productID === item.product
+                );
+                
+                if (product) {
+                  productName = product.name;
+                  productID = product.productID;
+                }
+              }
             }
             
             soldItemsHTML += `
@@ -1020,7 +1196,7 @@
                 </div>
                 <div class="flex space-x-4">
                   <span><i class="fas fa-hashtag text-gray-400 mr-1"></i>${item.soldCount}</span>
-                  <span><i class="fas fa-dollar-sign text-gray-400 mr-1"></i>${item.revenue.toFixed(2)}</span>
+                  <span><i class="fas fa-dollar-sign text-gray-400 mr-1"></i>${(item.revenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </div>
             `;
@@ -1036,7 +1212,7 @@
                   <span class="text-sm text-gray-500 dark:text-gray-400">${formattedDate}</span>
                 </div>
                 <div class="font-bold text-green-600 dark:text-green-400">
-                  $${report.totalRevenue ? report.totalRevenue.toFixed(2) : '0.00'}
+                  ${(report.totalRevenue || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                 </div>
               </div>
             </div>
@@ -1055,7 +1231,6 @@
 
     // Create revenue chart
     function createRevenueChart() {
-      // Prepare data for chart (last 6 reports)
       const reportsForChart = [...allReports].sort((a, b) => 
         new Date(a.reportDate) - new Date(b.reportDate)
       ).slice(-6);
@@ -1070,15 +1245,12 @@
         report.soldItems.reduce((sum, item) => sum + item.soldCount, 0)
       );
       
-      // Get chart context
       const ctx = document.getElementById('revenueChart').getContext('2d');
       
-      // Destroy existing chart if it exists
       if (revenueChart) {
         revenueChart.destroy();
       }
       
-      // Create new chart
       revenueChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -1123,7 +1295,23 @@
               }
             },
             tooltip: {
-              usePointStyle: true
+              usePointStyle: true,
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    if (context.dataset.label === 'Revenue ($)') {
+                      label += context.parsed.y.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                    } else {
+                      label += context.parsed.y.toLocaleString('en-US');
+                    }
+                  }
+                  return label;
+                }
+              }
             }
           },
           scales: {
@@ -1138,7 +1326,7 @@
               },
               ticks: {
                 callback: function(value) {
-                  return '$' + value;
+                  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
                 },
                 color: html.classList.contains('dark') ? '#9ca3af' : '#6b7280'
               },
@@ -1156,6 +1344,11 @@
                 color: html.classList.contains('dark') ? '#e5e7eb' : '#374151'
               },
               ticks: {
+                callback: function(value) {
+                  if (Math.floor(value) === value) {
+                    return value.toLocaleString('en-US');
+                  }
+                },
                 color: html.classList.contains('dark') ? '#9ca3af' : '#6b7280'
               },
               grid: {
@@ -1214,6 +1407,97 @@
           overlay.appendChild(logoContainer);
           
           // Redirect after animation completes
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1500);
+        }, 100);
+      }, 1000);
+    });
+
+    // Add mobile menu functionality
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuModal = document.getElementById('mobileMenuModal');
+    const mobileMenuContent = document.getElementById('mobileMenuContent');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const closeMobileMenux = document.getElementById('closeMobileMenu');
+    const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
+    const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+    
+    // Function to open mobile menu modal
+    function openMobileMenu() {
+      mobileMenuModal.classList.remove('hidden');
+      
+      // Slide up animation
+      mobileMenuContent.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        mobileMenuContent.style.transform = 'translateY(0)';
+      }, 10);
+      
+      // Prevent body scrolling
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Function to close mobile menu modal
+    function closeMobileMenu() {
+      mobileMenuContent.style.transform = 'translateY(100%)';
+      
+      setTimeout(() => {
+        mobileMenuModal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    }
+    
+    // Event listeners for mobile menu
+    mobileMenu.addEventListener('click', openMobileMenu);
+    closeMobileMenux.addEventListener('click', closeMobileMenu);
+    mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    
+    // Mobile dark mode toggle
+    darkModeToggleMobile.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+      
+      // Update chart with new theme
+      setTimeout(() => {
+        createRevenueChart();
+      }, 100);
+    });
+    
+    // Mobile logout button
+    logoutBtnMobile.addEventListener('click', function(e) {
+      e.preventDefault();
+      closeMobileMenu();
+      
+      // Show logout toast with animation
+      logoutToast.classList.add('show');
+      
+      // Same logout logic as the sidebar logout button
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-white dark:bg-gray-900 z-50 opacity-0 transition-opacity duration-700';
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => {
+          overlay.style.opacity = '1';
+          
+          const logoContainer = document.createElement('div');
+          logoContainer.className = 'absolute inset-0 flex items-center justify-center flex-col';
+          logoContainer.innerHTML = `
+            <div class="bg-primary-600 dark:bg-primary-700 p-4 rounded-full shadow-lg animate-bounce-slow">
+              <i class="fas fa-shopping-cart text-white text-3xl"></i>
+            </div>
+            <h2 class="mt-4 text-primary-600 dark:text-primary-400 text-xl font-bold">See you soon!</h2>
+          `;
+          overlay.appendChild(logoContainer);
+          
           setTimeout(() => {
             window.location.href = '/login';
           }, 1500);
