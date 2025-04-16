@@ -9,7 +9,7 @@
   <script>
       const tokenx = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (!tokenx) {
-      window.location.href = '/login';
+      window.location.href = '/auth';
     }
   </script>
   <script>
@@ -1124,7 +1124,7 @@
           
           // Redirect after animation completes
           setTimeout(() => {
-            window.location.href = '/login';
+            window.location.href = '/auth';
           }, 1500);
         }, 100);
       }, 1000);
@@ -1210,7 +1210,7 @@
           overlay.appendChild(logoContainer);
           
           setTimeout(() => {
-            window.location.href = '/login';
+            window.location.href = 'auth';
           }, 1500);
         }, 100);
       }, 1000);

@@ -44,7 +44,7 @@ const frontendPages = {
   '/dashboard': 'dashboard.html',
   '/products': 'products.html',
   '/reports': 'reports.html',
-  '/login': 'login.html',
+  '/auth': 'auth.html',
   '/register': 'register.html'
 };
 

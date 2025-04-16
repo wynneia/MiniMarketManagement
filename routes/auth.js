@@ -22,7 +22,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login endpoint
-router.post('/login', async (req, res) => {
+router.post('/auth', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
